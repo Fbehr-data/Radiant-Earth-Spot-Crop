@@ -11,6 +11,6 @@ testbook
 mlflow
 parsenvy
 black
-radiant-mlhub~=0.1.3
 rasterio
 notebook
+radiant-mlhub~=0.1.3

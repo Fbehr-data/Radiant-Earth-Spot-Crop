@@ -129,7 +129,9 @@ dmypy.json
 .pyre/
 
 
-data/*.csv
+data/
+.vscode/
+.DS_Store
 models/*.sav
 mlruns
 models/*
