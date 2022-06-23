@@ -28,11 +28,14 @@ DOWNLOAD_S2 = OrderedDict({
     'CLM': True
 })
 
+
 # Set the directories
 OUTPUT_DIR = f'{OUTPUT_DIR}/train'
 os.makedirs(OUTPUT_DIR,exist_ok=True)
 OUTPUT_DIR_BANDS = f'{OUTPUT_DIR}/bands-raw' 
 os.makedirs(OUTPUT_DIR_BANDS,exist_ok=True)
+
+os.chdir(f'{OUTPUT_DIR}')
 
 # Download the data
 def download_archive(archive_name):
@@ -135,3 +138,6 @@ df_train = load_df(f'{FOLDER_BASE}_train_labels')
 folder_path = '/Users/maxlanger/neuefische/Radiant-Earth-Spot-Crop/'
 df_train['file_path'] = df_train['file_path'].str.replace(folder_path, './data/')
 df_train.to_csv('train_data.csv', index=False)
+
+# Change the working directory
+os.chdir('../')
