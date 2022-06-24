@@ -28,13 +28,12 @@ DOWNLOAD_S2 = OrderedDict({
     'CLM': True
 })
 
-
 # Set the directories
 OUTPUT_DIR = f'{OUTPUT_DIR}/train'
 os.makedirs(OUTPUT_DIR,exist_ok=True)
 OUTPUT_DIR_BANDS = f'{OUTPUT_DIR}/bands-raw' 
 os.makedirs(OUTPUT_DIR_BANDS,exist_ok=True)
-
+# Change the working directory
 os.chdir(f'{OUTPUT_DIR}')
 
 # Download the data
