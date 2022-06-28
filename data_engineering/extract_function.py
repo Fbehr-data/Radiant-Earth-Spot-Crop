@@ -82,7 +82,7 @@ def extract_s2(tile_ids):
         
         if len(field_label)==1:                         # ignore fields with multiple labels
           field_label = field_label[0]                  # convert the label array to an integer
-          patch = multi_band_arr[mask]                  # use the mask to determines which pixels of the bands belong to the current field id
+          patch = multi_band_arr[mask]                  # use the mask to determines which pixels for all the bands and dates belong to the current field id
           np.savez_compressed(f"{OUTPUT_DIR_BANDS}/{field_id}", patch) # save these pixels of the bands array as np object
           
           labels.append(field_label)                    # add the current field label

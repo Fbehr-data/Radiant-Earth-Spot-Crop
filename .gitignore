@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 # Different other folders
+ideas/
 data/
 .vscode/
 .DS_Store
