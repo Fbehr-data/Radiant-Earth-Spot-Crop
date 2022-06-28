@@ -1,3 +1,4 @@
+# Import the needed modules
 import os,sys
 import numpy as np 
 import pandas as pd
@@ -6,11 +7,18 @@ from pathlib import Path
 from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
 
-os.environ['MLHUB_API_KEY'] = 'N/A'
-OUTPUT_DIR = './data'
+# Set the directories
+OUTPUT_DIR = sys.argv[1]        # Enter the directory to which the data is downloaded
+                                # for example Radiant_Earth_Spot_Crop/data
+OUTPUT_DIR = f'{OUTPUT_DIR}/images'
+os.makedirs(OUTPUT_DIR,exist_ok=True)
+# Change the working directory
+os.chdir(f'{OUTPUT_DIR}')
 
+# Set the important download information
+os.environ['MLHUB_API_KEY'] = 'N/A'
 FOLDER_BASE = 'ref_south_africa_crops_competition_v1'
-DOWNLOAD_S1 = False # If you set this to true then the Sentinel-1 data will be downloaded
+DOWNLOAD_S1 = False             # If you set this to true then the Sentinel-1 data will be downloaded
 # Select which Sentinel-2 imagery bands you'd like to download here. 
 DOWNLOAD_S2 = OrderedDict({
     'B01': False,
@@ -27,14 +35,6 @@ DOWNLOAD_S2 = OrderedDict({
     'B12': True, #SWIR2
     'CLM': True
 })
-
-# Set the directories
-OUTPUT_DIR = f'{OUTPUT_DIR}/train'
-os.makedirs(OUTPUT_DIR,exist_ok=True)
-OUTPUT_DIR_BANDS = f'{OUTPUT_DIR}/bands-raw' 
-os.makedirs(OUTPUT_DIR_BANDS,exist_ok=True)
-# Change the working directory
-os.chdir(f'{OUTPUT_DIR}')
 
 # Download the data
 def download_archive(archive_name):
@@ -131,12 +131,11 @@ def load_df(collection_id):
 
     return pd.DataFrame(rows, columns=['tile_id', 'datetime', 'satellite_platform', 'asset', 'file_path'])
 
-df_train = load_df(f'{FOLDER_BASE}_train_labels')
-
+# Load the info of the images into a CSV file
+print(f'Load the image info.')
+df_images = load_df(f'{FOLDER_BASE}_train_labels')
 # Save the data into a csv file
-folder_path = '/Users/maxlanger/neuefische/Radiant-Earth-Spot-Crop/'
-df_train['file_path'] = df_train['file_path'].str.replace(folder_path, './data/')
-df_train.to_csv('train_data.csv', index=False)
-
+print(f'Save the image info into a CSV file to {OUTPUT_DIR}')
+df_images.to_csv('images_info_data.csv', index=False)
 # Change the working directory
 os.chdir('../')

@@ -1,14 +1,16 @@
-# Import the needed modules
-import os, sys, datetime
+# import the needed modules
+import os, sys, pickle, multiprocessing
+import concurrent.futures
 import numpy as np, pandas as pd
 import rasterio
 from pathlib import Path
-from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
 from tqdm.auto import tqdm
+from engineering_functions import extract_s2
+
 
 # Set the directories
-OUTPUT_DIR = '../data'          # Enter the directory to which the data is downloaded
+OUTPUT_DIR = sys.argv[1]        # Enter the directory to which the data is downloaded
                                 # for example Radiant_Earth_Spot_Crop/data
 OUTPUT_DIR = f'{OUTPUT_DIR}/images'
 os.makedirs(OUTPUT_DIR,exist_ok=True)
@@ -33,9 +35,11 @@ DOWNLOAD_S2 = OrderedDict({
 })
 
 # Load the data
+print('Loading the image info.')
 df_images = pd.read_csv(f'{OUTPUT_DIR}/images_info_data.csv')
 df_images['date'] = df_images.datetime.astype(np.datetime64)
 bands = [k for k,v in DOWNLOAD_S2.items() if v==True]
+
 
 # Function for extracting the pixel information of each tile for each band
 def extract_s2(tile_ids):
@@ -91,3 +95,47 @@ def extract_s2(tile_ids):
           dates.append(tile_dates)                      # add the dates which are available for the current tile
   df = pd.DataFrame(dict(field_id=fields,tile_id=tiles,label=labels,dates=dates)) # create a dataframe from the meta data
   return df
+
+
+# Create a sorted dataframe by the tile ids
+tile_ids = sorted(df_images.tile_id.unique())
+print(f'extracting data from {len(tile_ids)} tiles for bands {bands}')
+
+# Check the number of CPU cores
+num_processes = multiprocessing.cpu_count()
+print(f'processesing on : {num_processes} cpus')
+
+# Create a pool of processes equal to the number of cores
+pool = multiprocessing.Pool(num_processes)
+# Calculate the number of tiles each core must process
+tiles_per_process = len(tile_ids) / num_processes
+# Create the a number of tile id batches equal to the number of cores
+batches = []
+for num_process in range(1, num_processes + 1):
+    start_index = (num_process - 1) * tiles_per_process + 1
+    end_index = num_process * tiles_per_process
+    start_index = int(start_index)
+    end_index = int(end_index)
+    sublist = tile_ids[start_index - 1:end_index]
+    batches.append((sublist,))
+    print(f"Task # {num_process} process tiles {len(sublist)}")
+
+# Set up the processes with the extract function and the given tile id batch 
+results = []
+for batch in batches:
+    results.append(pool.apply_async(extract_s2, args=batch))
+
+# Start the processes and catch the results
+all_results = []
+for result in results:
+    df = result.get()
+    all_results.append(df)
+
+# Create a data frame from the meta data results and save it as pickle file
+print('Saving the meta data CSV file.')
+df_meta = pd.concat(all_results)
+df_meta = df_meta.sort_values(by=['field_id']).reset_index(drop=True)
+df_meta.to_csv(f'{OUTPUT_DIR}/meta_data_fields_bands.csv')
+
+print(f'The field array npz files are saved to {OUTPUT_DIR_BANDS}')
+print(f'The meta data of the fields and bands saved to {OUTPUT_DIR}/meta_data_fields_bands.csv')
