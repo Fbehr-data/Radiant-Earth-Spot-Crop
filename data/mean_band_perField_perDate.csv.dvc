@@ -1,0 +1,4 @@
+outs:
+- md5: 5c1fb46e044d1ace1c805c0e0cdb1909
+  size: 341635216
+  path: mean_band_perField_perDate.csv
