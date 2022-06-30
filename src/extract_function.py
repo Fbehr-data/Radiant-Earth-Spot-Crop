@@ -1,11 +1,13 @@
 # Import the needed modules
 import os, sys, datetime
-import numpy as np, pandas as pd
-import rasterio
+import numpy as np
+import pandas as pd
+from scipy import stats
 from pathlib import Path
-from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
 from tqdm.auto import tqdm
+from radiant_mlhub.client import _download as download_file
+import rasterio
 
 # Set the directories
 OUTPUT_DIR = '../data'          # Enter the directory to which the data is downloaded
@@ -91,3 +93,35 @@ def extract_s2(tile_ids):
           dates.append(tile_dates)                      # add the dates which are available for the current tile
   df = pd.DataFrame(dict(field_id=fields,tile_id=tiles,label=labels,dates=dates)) # create a dataframe from the meta data
   return df
+
+
+def get_clm(bands):
+  """ Extracts the cloud mask band from an array of bands.
+
+  Args:
+      bands (numpy.ndarray): Array of pixel of the current field for each band and date.
+
+  Returns:
+      bands (numpy.ndarray): Array without the cloud mask band.
+      cloud (numpy.ndarray): Array of the cloud mask band.
+  """
+  bands_T = bands.transpose(1,0,2)                        # switch the pixel and bands
+  cloud = np.expand_dims(bands_T[len(bands_T)-1],axis=0)  # get the last band, which is the cloud mask
+  bands_T = bands_T[0:len(bands_T)-1]                     # remove the cloud mask band from the array
+  bands = bands_T.transpose(1,0,2)                        # switch bands and pixel
+  cloud = cloud.transpose(1,0,2)                          # switch bands and pixel
+  return bands, cloud
+
+
+def calculate_band_mode(band):
+  """Calculates the mode for a given band.
+
+  Args:
+      band (numpy.ndarray): Array of pixel of the current field for one band and each date.
+
+  Returns:
+      numpy.ndarray: Mode over all pixel for the band for each date.
+  """
+  mode = stats.mode(band)                             # calculate the mode
+  mode = np.squeeze(mode[0],axis=0).transpose(1,0)    # reshapes the array into the form (dates, band)
+  return mode
