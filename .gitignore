@@ -130,6 +130,7 @@ dmypy.json
 
 # Different other folders
 data/
+ideas/
 .vscode/
 .DS_Store
 models/*.sav
