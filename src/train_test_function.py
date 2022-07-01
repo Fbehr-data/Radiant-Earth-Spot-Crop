@@ -1,14 +1,16 @@
 import numpy as np
+import pandas as pd
 
-def train_test_split_fields(df, train_size=0.7, random_state=42):
+def train_test_split_fields(df:pd.DataFrame, train_size=0.7, random_state=42) -> pd.DataFrame:
     """Splits a data frame into train and test data frames.
 
     Args:
-        df (pandas.core.frame.DataFrame): The data frame to be splitted.
+        df (pd.DataFrame): The data frame to be splitted.
         train_size (float, optional): This defines the size of the train data set. Defaults to 0.7, so 70%.
+        random_state (float, optional): The random seed of used for the split. 
 
     Returns:
-        pandas.core.frame.DataFrame: A train and a test data frame. 
+        pd.DataFrame: A train and a test data frame. 
     """
     # Set a random seed
     np.random.seed(random_state)
