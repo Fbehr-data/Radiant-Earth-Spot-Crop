@@ -11,16 +11,16 @@ from collections import OrderedDict
 
 # import own modules from the scr folder
 import sys
-sys.path.append('../src/')
+sys.path.append("../src/")
 from preprocessing_functions import get_clm, calculate_band_mode
 
 # set the directory and the chunks in which the larger fields are splitted 
-DATA_DIR = './data'
-DIR_BANDS = f'{DATA_DIR}/bands-raw/' 
+DATA_DIR = "./data"
+DIR_BANDS = f"{DATA_DIR}/bands-raw/" 
 
 # load the data frame and add the path information of the npz objects for each field to the data frame
-df = pd.read_pickle(f'{DATA_DIR}/meta_data_fields_bands.pkl')
-df['path'] = DIR_BANDS+df.field_id.astype(str)+'.npz'
+df = pd.read_pickle(f"{DATA_DIR}/meta_data_fields_bands.pkl")
+df["path"] = DIR_BANDS+df.field_id.astype(str)+".npz"
 
 # extract the field data from the npz files 
 # and calculate the mean of each field for each band on each date
@@ -31,7 +31,7 @@ features = []
 
 print("Calculation of the mean for each band of each field on each date:")
 for _,row in tqdm(df.iterrows(), total=len(df)):
-    bands = np.load(row.path)['arr_0']
+    bands = np.load(row.path)["arr_0"]
     n = bands.shape[0]              # save the number of bands 
     n_dates = bands.shape[2]        # save the number of dates 
 
@@ -57,12 +57,12 @@ all_labels = np.concatenate(labels)
 all_dates = np.concatenate(dates)
 
 # put all different information into one data frame
-cols = ['B02', 'B03', 'B04', 'B08', 'B11', 'B12', 'CLM']
+cols = ["B02", "B03", "B04", "B08", "B11", "B12", "CLM"]
 df_data = pd.DataFrame(all_features,columns=cols)
-df_data.insert(0,'field_id',all_field_ids)
-df_data.insert(1,'date',all_dates)
-df_data.insert(2,'label',all_labels)
+df_data.insert(0,"field_id",all_field_ids)
+df_data.insert(1,"date",all_dates)
+df_data.insert(2,"label",all_labels)
 
 # save the data frame as CSV file
 print(f"Saving the data into {DATA_DIR}/mean_band_perField_perDate.csv")
-df_data.to_csv(f'{DATA_DIR}/mean_band_perField_perDate.csv', index=False)
+df_data.to_csv(f"{DATA_DIR}/mean_band_perField_perDate.csv", index=False)
