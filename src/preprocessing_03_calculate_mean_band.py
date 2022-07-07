@@ -59,10 +59,10 @@ if __name__ == "__main__":
     labels = []
     dates = []
     features = []
+    tile_ids = []
 
-    print("Calculation of the mean for each band of each field on each date:")
     for _,row in tqdm(df.iterrows(), total=len(df)):
-        bands = np.load(row.path)["arr_0"]
+        bands = np.load(row.path)['arr_0']
         n = bands.shape[0]              # save the number of bands 
         n_dates = bands.shape[2]        # save the number of dates 
 
@@ -75,24 +75,28 @@ if __name__ == "__main__":
             
         field_id = np.repeat(row.field_id,feature.shape[0]) # get an array of the field ids, of the same size as the date array of the current feature
         field_ids.append(field_id)                          # add the field ids array to the field ids list
+        tile_id = np.repeat(row.tile_id,feature.shape[0])
+        tile_ids.append(tile_id)
         label = np.repeat(row.label,feature.shape[0])       # get an array of the labels, of the same size as the date array of the current feature
         labels.append(label)                                # add the label array to the labels list
         date = [str(d)[:10] for d in row.dates]             # goes through the dates in each row and saves them to a list without the time [-> [:10]]
         date = np.array(date)                               # convert the date list to an array
-        dates.append(date)                                  # add the date array to the dates
+        dates.append(date)                                  # add the date array to the dates                               # add the date array to the dates
 
     # put all of the list information into an array
     all_features = np.concatenate(features)
     all_field_ids = np.concatenate(field_ids)
-    all_labels = np.concatenate(labels)
+    all_tile_ids = np.concatenate(tile_ids)
     all_dates = np.concatenate(dates)
+    all_labels = np.concatenate(labels)
 
     # put all different information into one data frame
-    cols = ["B02", "B03", "B04", "B08", "B11", "B12", "CLM"]
+    cols = ['B02', 'B03', 'B04', 'B08', 'B11', 'B12', 'CLM']
     df_data = pd.DataFrame(all_features,columns=cols)
-    df_data.insert(0,"field_id",all_field_ids)
-    df_data.insert(1,"date",all_dates)
-    df_data.insert(2,"label",all_labels)
+    df_data.insert(0,'field_id',all_field_ids)
+    df_data.insert(1,'tile_id',all_tile_ids)
+    df_data.insert(2,'date',all_dates)
+    df_data.insert(3,'label',all_labels)
 
     # save the data frame as CSV file
     print(f"Saving the data into {DATA_DIR}/mean_band_perField_perDate.csv")
