@@ -11,12 +11,13 @@ from collections import OrderedDict
 from tqdm.auto import tqdm
 import rasterio
 
+
 # set the directories
 DATA_DIR = "./data"
 IMAGE_DIR = f"{DATA_DIR}/images"
-os.makedirs(IMAGE_DIR,exist_ok=True)
 BANDS_DIR = f"{DATA_DIR}/bands-raw" 
 os.makedirs(BANDS_DIR,exist_ok=True)
+
 
 def get_bands() -> list:
   """ Load the used bands.
@@ -27,6 +28,7 @@ def get_bands() -> list:
   bands = pd.read_pickle(f"{IMAGE_DIR}/used_bands.pkl")
   bands = bands.used_bands.tolist()
   return bands
+
 
 # Function for extracting the pixel information of each tile for each band
 def extract_s2(df_tiles:pd.DataFrame) -> pd.DataFrame:

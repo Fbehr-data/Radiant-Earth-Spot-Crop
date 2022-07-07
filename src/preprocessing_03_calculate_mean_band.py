@@ -3,27 +3,55 @@
 ## https://github.com/RadiantMLHub/spot-the-crop-challenge/tree/main/2nd%20place%20-%20Kiminya
 
 # import the needed modules
+import os, sys
 import numpy as np
 import pandas as pd
 from scipy import stats
-import os, random, pickle, time, glob, multiprocessing
 from tqdm.auto import tqdm
 from collections import OrderedDict
 
-# import own modules from the scr folder
-import sys
-sys.path.append("../src/")
-from preprocessing_functions import get_clm, calculate_band_mode
 
 # set the directory and the chunks in which the larger fields are splitted 
 DATA_DIR = "./data"
-DIR_BANDS = f"{DATA_DIR}/bands-raw/" 
+BANDS_DIR = f"{DATA_DIR}/bands-raw/" 
+
+
+def get_clm(bands):
+  """ Extracts the cloud mask band from an array of bands.
+
+  Args:
+      bands (numpy.ndarray): Array of pixel of the current field for each band and date.
+
+  Returns:
+      bands (numpy.ndarray): Array without the cloud mask band.
+      cloud (numpy.ndarray): Array of the cloud mask band.
+  """
+  bands_T = bands.transpose(1,0,2)                        # switch the pixel and bands
+  cloud = np.expand_dims(bands_T[len(bands_T)-1],axis=0)  # get the last band, which is the cloud mask
+  bands_T = bands_T[0:len(bands_T)-1]                     # remove the cloud mask band from the array
+  bands = bands_T.transpose(1,0,2)                        # switch bands and pixel
+  cloud = cloud.transpose(1,0,2)                          # switch bands and pixel
+  return bands, cloud
+
+
+def calculate_band_mode(band):
+  """ Calculates the mode for a given band.
+
+  Args:
+      band (numpy.ndarray): Array of pixel of the current field for one band and each date.
+
+  Returns:
+      numpy.ndarray: Mode over all pixel for the band for each date.
+  """
+  mode = stats.mode(band)                             # calculate the mode
+  mode = np.squeeze(mode[0],axis=0).transpose(1,0)    # reshapes the array into the form (dates, band)
+  return mode
 
 
 if __name__ == "__main__":
     # load the data frame and add the path information of the npz objects for each field to the data frame
     df = pd.read_pickle(f"{DATA_DIR}/meta_data_fields_bands.pkl")
-    df["path"] = DIR_BANDS+df.field_id.astype(str)+".npz"
+    df["path"] = BANDS_DIR+df.field_id.astype(str)+".npz"
 
     # extract the field data from the npz files 
     # and calculate the mean of each field for each band on each date

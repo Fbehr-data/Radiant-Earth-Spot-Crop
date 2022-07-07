@@ -1,5 +1,5 @@
 ## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-06 ##
-## The script is based on the tutorial by the Radiant Earth Foundation
+## The script is based on the tutorial by the Radiant Earth Foundation for the Zindi: Spot the crop challenge.
 ## https://github.com/radiantearth/mlhub-tutorials/tree/main/notebooks/South%20Africa%20Crop%20Types%20Competition
 
 # import the needed modules
@@ -10,6 +10,7 @@ import tarfile,json
 from pathlib import Path
 from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
+
 
 # set the directories to which the data is downloaded
 DATA_DIR = "./data"
@@ -38,8 +39,14 @@ DOWNLOAD_S2 = OrderedDict({
     "CLM": True
 })
 
-# download the data
-def download_archive(archive_name):
+
+def download_archive(archive_name:str):
+    """ Downloads and extracts the raw data 
+        from the MLHUB of the Radiant Earth Foundation.
+
+    Args:
+        archive_name (str): Name of the archive to be downloaded.
+    """
     if os.path.exists(archive_name.replace(".tar.gz", "")):
         return
     
@@ -51,28 +58,30 @@ def download_archive(archive_name):
         tfile.extractall()
     os.remove(archive_name)
 
-for split in ["train"]:
-    # download the labels
-    labels_archive = f"{FOLDER_BASE}_{split}_labels.tar.gz"
-    download_archive(labels_archive)
-    
-    # download Sentinel-1 data
-    if DOWNLOAD_S1:
-        s1_archive = f"{FOLDER_BASE}_{split}_source_s1.tar.gz"
-        download_archive(s1_archive)
 
-    for band, download in DOWNLOAD_S2.items():
-        if not download:
-            continue
-        s2_archive = f"{FOLDER_BASE}_{split}_source_s2_{band}.tar.gz"
-        download_archive(s2_archive)
-print("Finished downloading the data!")
+def resolve_path(base:str, path:str) -> str:
+    """ Resolves the path given by the base and the specified path.
+        This means that the path is converted to an absolute path.
+
+    Args:
+        base (str): Base path.
+        path (str): Specified path.
+
+    Returns:
+        str: A resolved path.
+    """
+    return Path(os.path.join(base, path)).resolve()
 
 # load the data to a dataframe
-def resolve_path(base, path):
-    return Path(os.path.join(base, path)).resolve()
-        
-def load_df(collection_id):
+def load_df(collection_id:str) -> pd.DataFrame:
+    """ Read the information for all images (.tif) from a .json file.
+
+    Args:
+        collection_id (str): Path to the labels folder.
+
+    Returns:
+        pd.DataFrame: Data frame containing the information for each image (.tif).
+    """
     split = collection_id.split("_")[-2]
     collection = json.load(open(f"{collection_id}/collection.json", "r"))
     rows = []
@@ -137,11 +146,32 @@ def load_df(collection_id):
 if __name__ == "__main__":
     # change the working directory
     os.chdir(f"{IMAGE_DIR}")
+
+    # start the download
+    for split in ["train"]:
+        # download the labels
+        labels_archive = f"{FOLDER_BASE}_{split}_labels.tar.gz"
+        download_archive(labels_archive)
+        
+        # download Sentinel-1 data
+        if DOWNLOAD_S1:
+            s1_archive = f"{FOLDER_BASE}_{split}_source_s1.tar.gz"
+            download_archive(s1_archive)
+
+        for band, download in DOWNLOAD_S2.items():
+            if not download:
+                continue
+            s2_archive = f"{FOLDER_BASE}_{split}_source_s2_{band}.tar.gz"
+            download_archive(s2_archive)
+    print("Finished downloading the data!")
+
     # load the info of the images into a CSV file
     print(f"Load the image info.")
     df_images = load_df(f"{FOLDER_BASE}_train_labels")
+
     # save the data into a csv file
     print(f"Saving the image info into a CSV file to {IMAGE_DIR}/images_info_data.csv")
     df_images.to_csv("images_info_data.csv", index=False)
+
     # change the working directory
     os.chdir("../")
