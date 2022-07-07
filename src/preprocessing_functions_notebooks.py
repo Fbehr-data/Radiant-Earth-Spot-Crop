@@ -10,33 +10,33 @@ from radiant_mlhub.client import _download as download_file
 import rasterio
 
 # Set the directories
-OUTPUT_DIR = '../data'          # Enter the directory to which the data is downloaded
+OUTPUT_DIR = "../data"          # Enter the directory to which the data is downloaded
                                 # for example Radiant_Earth_Spot_Crop/data
-OUTPUT_DIR = f'{OUTPUT_DIR}/images'
+OUTPUT_DIR = f"{OUTPUT_DIR}/images"
 os.makedirs(OUTPUT_DIR,exist_ok=True)
-OUTPUT_DIR_BANDS = f'{OUTPUT_DIR}/bands-raw' 
+OUTPUT_DIR_BANDS = f"{OUTPUT_DIR}/bands-raw" 
 os.makedirs(OUTPUT_DIR_BANDS,exist_ok=True)
 
 # Set the important download information
 DOWNLOAD_S2 = OrderedDict({
-    'B01': False,
-    'B02': True, #Blue
-    'B03': True, #Green
-    'B04': True, #Red
-    'B05': False,
-    'B06': False,
-    'B07': False,
-    'B08': True, #NIR
-    'B8A': False, #NIR2
-    'B09': False,
-    'B11': True, #SWIR1
-    'B12': True, #SWIR2
-    'CLM': True
+    "B01": False,
+    "B02": True, #Blue
+    "B03": True, #Green
+    "B04": True, #Red
+    "B05": False,
+    "B06": False,
+    "B07": False,
+    "B08": True, #NIR
+    "B8A": False, #NIR2
+    "B09": False,
+    "B11": True, #SWIR1
+    "B12": True, #SWIR2
+    "CLM": True
 })
 
 # Load the data
-df_images = pd.read_csv(f'{OUTPUT_DIR}/images_info_data.csv')
-df_images['date'] = df_images.datetime.astype(np.datetime64)
+df_images = pd.read_csv(f"{OUTPUT_DIR}/images_info_data.csv")
+df_images["date"] = df_images.datetime.astype(np.datetime64)
 bands = [k for k,v in DOWNLOAD_S2.items() if v==True]
 
 # Function for extracting the pixel information of each tile for each band
@@ -57,22 +57,22 @@ def extract_s2(tile_ids):
   tiles = []          # create empty list to catch the tile ids
   
   for tile_id in tqdm(tile_ids):                          # iterate through each tile id
-      df_tile = df_images[df_images['tile_id']==tile_id]    # load a data frame with the data of the current tile id
-      tile_dates = sorted(df_tile[df_tile['satellite_platform']=='s2']['date'].unique())    # sort data by date
+      df_tile = df_images[df_images["tile_id"]==tile_id]    # load a data frame with the data of the current tile id
+      tile_dates = sorted(df_tile[df_tile["satellite_platform"]=="s2"]["date"].unique())    # sort data by date
       
       ARR = {}                                          # create dictionary to catch all the band information for all dates of the current tile
       for band in bands:                                # iterate through the bands we chose
         band_arr = []                                   # create empty list to catch the band data for each date
         for date in tile_dates:                         # iterate through the dates for the current tile id 
-          src = rasterio.open(df_tile[(df_tile['date']==date) & (df_tile['asset']==band)]['file_path'].values[0])
+          src = rasterio.open(df_tile[(df_tile["date"]==date) & (df_tile["asset"]==band)]["file_path"].values[0])
           band_arr.append(src.read(1))                  # open the band data (pixel) for the current band of the current tile and current date
-        ARR[band] = np.array(band_arr,dtype='float32')  # add the band data to the dictionary under the current band name
+        ARR[band] = np.array(band_arr,dtype="float32")  # add the band data to the dictionary under the current band name
         
       multi_band_arr = np.stack(list(ARR.values())).astype(np.float32)    # reformats the dictionary values (arrays of the bands) to a stacked array
       multi_band_arr = multi_band_arr.transpose(2,3,0,1)                  # reformats the dictionary values to the shape: width, height, bands, dates
-      label_src = rasterio.open(df_tile[df_tile['asset']=='labels']['file_path'].values[0])
+      label_src = rasterio.open(df_tile[df_tile["asset"]=="labels"]["file_path"].values[0])
       label_array = label_src.read(1)                   # reads the labels of the pixels that belong to fields in the tile
-      field_src = rasterio.open(df_tile[df_tile['asset']=='field_ids']['file_path'].values[0])
+      field_src = rasterio.open(df_tile[df_tile["asset"]=="field_ids"]["file_path"].values[0])
       fields_arr = field_src.read(1)                    # reads the field id of the pixels that belong to fields in tile
       
       for field_id in np.unique(fields_arr):            # iterate through all field ids in the current tile
