@@ -1,4 +1,4 @@
-# Import the needed modules
+# import the needed modules
 import os,sys
 import numpy as np 
 import pandas as pd
@@ -7,19 +7,19 @@ from pathlib import Path
 from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
 
-# Set the directories to which the data is downloaded
+# set the directories to which the data is downloaded
 OUTPUT_DIR = "./data"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 OUTPUT_DIR = f"{OUTPUT_DIR}/images"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-# Change the working directory
+# change the working directory
 os.chdir(f"{OUTPUT_DIR}")
 
-# Set the important download information
+# set the important download information
 os.environ["MLHUB_API_KEY"] = "N/A"
 FOLDER_BASE = "ref_south_africa_crops_competition_v1"
 DOWNLOAD_S1 = False             # If you set this to true then the Sentinel-1 data will be downloaded
-# Select which Sentinel-2 imagery bands you"d like to download here. 
+# select which Sentinel-2 imagery bands you"d like to download here. 
 DOWNLOAD_S2 = OrderedDict({
     "B01": False,
     "B02": True, #Blue
@@ -36,7 +36,7 @@ DOWNLOAD_S2 = OrderedDict({
     "CLM": True
 })
 
-# Download the data
+# download the data
 def download_archive(archive_name):
     if os.path.exists(archive_name.replace(".tar.gz", "")):
         return
@@ -50,11 +50,11 @@ def download_archive(archive_name):
     os.remove(archive_name)
 
 for split in ["train"]:
-    # # Download the labels
+    # download the labels
     labels_archive = f"{FOLDER_BASE}_{split}_labels.tar.gz"
     download_archive(labels_archive)
     
-    ##Download Sentinel-1 data
+    # download Sentinel-1 data
     if DOWNLOAD_S1:
         s1_archive = f"{FOLDER_BASE}_{split}_source_s1.tar.gz"
         download_archive(s1_archive)
@@ -66,7 +66,7 @@ for split in ["train"]:
         download_archive(s2_archive)
 print("Finished downloading the data!")
 
-# Load the data to a dataframe
+# load the data to a dataframe
 def resolve_path(base, path):
     return Path(os.path.join(base, path)).resolve()
         
@@ -131,11 +131,11 @@ def load_df(collection_id):
 
     return pd.DataFrame(rows, columns=["tile_id", "datetime", "satellite_platform", "asset", "file_path"])
 
-# Load the info of the images into a CSV file
+# load the info of the images into a CSV file
 print(f"Load the image info.")
 df_images = load_df(f"{FOLDER_BASE}_train_labels")
-# Save the data into a csv file
-print(f"Save the image info into a CSV file to {OUTPUT_DIR}")
+# save the data into a csv file
+print(f"Saving the image info into a CSV file to {OUTPUT_DIR}")
 df_images.to_csv("images_info_data.csv", index=False)
-# Change the working directory
+# change the working directory
 os.chdir("../")
