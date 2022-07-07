@@ -14,7 +14,6 @@ from find_repo_root import get_repo_root
 
 
 # set the directories to which the data is downloaded
-# set the directories
 ROOT_DIR = get_repo_root()
 DATA_DIR = f"{ROOT_DIR}/data"
 os.makedirs(DATA_DIR, exist_ok=True)
