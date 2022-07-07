@@ -135,7 +135,7 @@ def load_df(collection_id):
 print(f"Load the image info.")
 df_images = load_df(f"{FOLDER_BASE}_train_labels")
 # save the data into a csv file
-print(f"Saving the image info into a CSV file to {OUTPUT_DIR}")
+print(f"Saving the image info into a CSV file to {OUTPUT_DIR}/images_info_data.csv")
 df_images.to_csv("images_info_data.csv", index=False)
 # change the working directory
 os.chdir("../")
