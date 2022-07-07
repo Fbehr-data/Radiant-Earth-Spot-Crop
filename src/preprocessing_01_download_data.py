@@ -1,3 +1,7 @@
+## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-06 ##
+## The script is based on the tutorial by the Radiant Earth Foundation
+## https://github.com/radiantearth/mlhub-tutorials/tree/main/notebooks/South%20Africa%20Crop%20Types%20Competition
+
 # import the needed modules
 import os,sys
 import numpy as np 
@@ -8,12 +12,10 @@ from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
 
 # set the directories to which the data is downloaded
-OUTPUT_DIR = "./data"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-OUTPUT_DIR = f"{OUTPUT_DIR}/images"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-# change the working directory
-os.chdir(f"{OUTPUT_DIR}")
+DATA_DIR = "./data"
+os.makedirs(DATA_DIR, exist_ok=True)
+IMAGE_DIR = f"{DATA_DIR}/images"
+os.makedirs(IMAGE_DIR, exist_ok=True)
 
 # set the important download information
 os.environ["MLHUB_API_KEY"] = "N/A"
@@ -131,11 +133,15 @@ def load_df(collection_id):
 
     return pd.DataFrame(rows, columns=["tile_id", "datetime", "satellite_platform", "asset", "file_path"])
 
-# load the info of the images into a CSV file
-print(f"Load the image info.")
-df_images = load_df(f"{FOLDER_BASE}_train_labels")
-# save the data into a csv file
-print(f"Saving the image info into a CSV file to {OUTPUT_DIR}/images_info_data.csv")
-df_images.to_csv("images_info_data.csv", index=False)
-# change the working directory
-os.chdir("../")
+
+if __name__ == "__main__":
+    # change the working directory
+    os.chdir(f"{IMAGE_DIR}")
+    # load the info of the images into a CSV file
+    print(f"Load the image info.")
+    df_images = load_df(f"{FOLDER_BASE}_train_labels")
+    # save the data into a csv file
+    print(f"Saving the image info into a CSV file to {IMAGE_DIR}/images_info_data.csv")
+    df_images.to_csv("images_info_data.csv", index=False)
+    # change the working directory
+    os.chdir("../")
