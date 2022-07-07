@@ -10,10 +10,13 @@ import tarfile,json
 from pathlib import Path
 from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
+from find_repo_root import get_repo_root
 
 
 # set the directories to which the data is downloaded
-DATA_DIR = "./data"
+# set the directories
+ROOT_DIR = get_repo_root()
+DATA_DIR = f"{ROOT_DIR}/data"
 os.makedirs(DATA_DIR, exist_ok=True)
 IMAGE_DIR = f"{DATA_DIR}/images"
 os.makedirs(IMAGE_DIR, exist_ok=True)

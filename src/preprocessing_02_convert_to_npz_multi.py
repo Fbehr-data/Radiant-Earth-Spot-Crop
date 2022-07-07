@@ -10,10 +10,12 @@ from pathlib import Path
 from collections import OrderedDict
 from tqdm.auto import tqdm
 import rasterio
+from find_repo_root import get_repo_root
 
 
 # set the directories
-DATA_DIR = "./data"
+ROOT_DIR = get_repo_root()
+DATA_DIR = f"{ROOT_DIR}/data"
 IMAGE_DIR = f"{DATA_DIR}/images"
 BANDS_DIR = f"{DATA_DIR}/bands-raw" 
 os.makedirs(BANDS_DIR,exist_ok=True)
