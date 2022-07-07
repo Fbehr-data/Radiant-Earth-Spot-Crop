@@ -6,7 +6,7 @@ import rasterio
 from pathlib import Path
 from collections import OrderedDict
 from tqdm.auto import tqdm
-from engineering_functions import extract_s2
+from preprocessing_functions import extract_s2
 
 
 # Set the directories

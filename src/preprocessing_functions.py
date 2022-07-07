@@ -114,7 +114,7 @@ def get_clm(bands):
 
 
 def calculate_band_mode(band):
-  """Calculates the mode for a given band.
+  """ Calculates the mode for a given band.
 
   Args:
       band (numpy.ndarray): Array of pixel of the current field for one band and each date.
