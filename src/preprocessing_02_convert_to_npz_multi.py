@@ -93,17 +93,18 @@ def extract_s2(df_tiles:pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == "__main__":
   # load the data
+  print("Loading the image info...")
   df_images = pd.read_csv(f"{IMAGE_DIR}/images_info_data.csv")
   df_images["date"] = df_images.datetime.astype(np.datetime64)
   bands = get_bands()
 
   # create a sorted dataframe by the tile ids
   tile_ids = sorted(df_images.tile_id.unique())
-  print(f"extracting data from {len(tile_ids)} tiles for bands {bands}")
+  print(f"Extracting data from {len(tile_ids)} tiles for bands {bands}")
 
   # check the number of CPU cores
-  num_processes = multiprocessing.cpu_count()
-  print(f"processesing on : {num_processes} cpus")
+  num_processes = 4
+  print(f"Processesing on : {num_processes} CPUs")
 
   # create a pool of processes equal to the number of cores
   pool = multiprocessing.Pool(num_processes)
