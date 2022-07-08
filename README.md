@@ -30,7 +30,11 @@ Timo Fischer:
 
 ---
 ## Data Structure
-For this project we use 6 of the 12 available spectral bands and the cloud mask data of the Sentinel-2. 
+For this project we use 6 of the 12 available spectral bands and the cloud mask of the Sentinel-2 data set. Information on the Sentinel-2 is available [here](https://de.wikipedia.org/wiki/Sentinel-2). 
+- Each band consists of 2650 individual tiles (TIF-files), each with a size of 256 x 256 pixels, which corresponds to an area of 2560 m x 2560 m. 
+- This means that we have all band information for each unique tile.
+- Each of these unique tiles contains a certain amount of fields. 
+- Each field has a unique ID and a unique label that identifies the crop type in the field. 
 
 ---
 ## Requirements and Setup:
@@ -54,6 +58,14 @@ poetry install
 
 This will setup the virtual environment in a `.venv` folder and install all needed packages listed in the `pyproject.toml`. 
 
+### Activate the environment
+
+For activating your virtual environment when restarting the session use the following command:
+
+```BASH
+source .venv/bin/activate
+```
+
 ---
 ## Downloading and Preprocessing the Data
 ### Downloading the data
@@ -70,7 +82,11 @@ The preprocessing scripts also take their time. In the `first preprocessing step
 
 ```
 
-In the second preprocessing step, we calculate the mean of for each band of each field for each date. This results in a CSV-file that can be used for further feature engineering. 
+In the `second preprocessing step`, we calculate the mean of for each band of each field for each date. This results in a CSV-file that can be used for further feature engineering. The second preprocessing step is started by:
+
+```BASH
+
+```
 
 ---
 ## Feature engineering, Train-Test-Split and Resampling
