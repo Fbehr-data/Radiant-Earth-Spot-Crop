@@ -52,3 +52,41 @@ y_val = y_val.astype(int)
 # set the class labels from 0 to 8 
 y_train = y_train-1
 y_val = y_val-1
+
+# initialize the GradientBoostingClassifier 
+# with optimized hyperparamters
+xgb = XGBClassifier(
+    objective='multi:softmax', 
+    n_estimators=890,
+    random_state=RSEED,
+    disable_default_eval_metric=1,
+    gpu_id=0,
+    tree_method='gpu_hist',
+    max_depth=10,
+    min_child_weight=4,
+    gamma=0.8213154931075035,
+    colsample_bytree=0.6149590564567726,
+    learning_rate=0.08090081872522414,
+    reg_lambda=1.568502076198119,
+    subsample=0.6392375791578488
+    )
+xgb.fit(X_train, y_train)
+
+# predict the absolute classes and probabilities
+y_pred_train = xgb.predict(X_train)
+y_pred_val = xgb.predict(X_val)
+
+# predict the probabilities for each  class
+y_proba_train = xgb.predict_proba(X_train)
+y_proba_val = xgb.predict_proba(X_val)
+
+print("---" * 12)
+print(f"Accuracy on train data: {round(accuracy_score(y_train, y_pred_train), 3)}")
+print(f"Accuracy on test data: {round(accuracy_score(y_val, y_pred_val), 3)}")
+print("---" * 12)
+print(f'F1-score on train data: {round(f1_score(y_train, y_pred_train, average="macro"), 3)}')
+print(f'F1-score on test data: {round(f1_score(y_val, y_pred_val, average="macro"), 3)}')
+print("---" * 12)
+print(f"Cross-entropy on train data: {round(log_loss(y_train, y_proba_train), 3)}")
+print(f"Cross-entropy on test data: {round(log_loss(y_val, y_proba_val), 3)}")
+print("---" * 12)
