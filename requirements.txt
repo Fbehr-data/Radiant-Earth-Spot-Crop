@@ -1,0 +1,39 @@
+fastapi
+uvicorn
+httpx
+socket
+request
+threading
+json
+simpleaudio
+time
+docker
+
+
+
+
+def image(fp, filename):
+    for i in formats:
+        i = i.upper()
+        if i not in OPEN:
+            init()
+        try:
+            factory, accept = OPEN[i]
+            result = not accept or accept(prefix)
+            if type(result) in [str, bytes]:
+                accept_warnings.append(result)
+            elif result:
+                fp.seek(0)
+                im = factory(fp, filename)
+                _decompression_bomb_check(im.size)
+                return im
+        except (SyntaxError, IndexError, TypeError, struct.error):
+            # Leave disabled by default, spams the logs with image
+                # opening failures that are entirely expected.
+                # logger.debug("", exc_info=True)
+            continue
+        except BaseException:
+            if exclusive_fp:
+                fp.close()
+            raise
+    return None
