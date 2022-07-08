@@ -19,6 +19,9 @@ The objective of the project:
 Anitha Grace:
 
 Felix Behrendt:
+- I studied Geoinformatics and love to gain more professional experience in data science.
+- Find me on [GitHub](https://github.com/Fbehr-data), [LinkedIn](https://www.linkedin.com/in/felix-behrendt-3b4ba1237/)
+
 
 Max Langer: 
 - I am a biologist and highly motivated to build a career in data science.
@@ -89,8 +92,41 @@ In the `second preprocessing step`, we calculate the mean of for each band of ea
 ```
 
 ---
-## Feature engineering, Train-Test-Split and Resampling
-### Feature engineering
+## Feature engineering / Data cleaning, Train-Test-Split and Resampling
+### Feature engineering / Data cleaning
+
+
+```BASH
+python feature_engineering.py
+```
+
+#### **cloud-masking**
+For each tile and each timestamp a cloudmask (CLM) was provided. In case of clouds we don't measure field data, but the upper site of a cloud. To each field and timestamp the mode of cloudmask will be calculated and added to the data (during preprocessing). Thus results in two different values:
+</br> 
+* 0 - no cloud 
+* 255 - no information
+
+Currently our package provides two solution. The first option is to keep all the information delete all observations with no cloud information. See this [Notebook](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/feature_engineering_01_cloudmask.ipynb) for more information. <br> 
+#### **Spectral Indices**
+In the field of remote sensing the actual bands are used to calculate spectral indices. These indices represent different information about the measured object. For example: The Normalized Difference Vegetation Index (NDVI) which is an indicator of the vitality of vegetation. A full list of indices can be found [here](https://www.indexdatabase.de/db/is.php?sensor_id=96). We calculate these indices based on the [EDA](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/EDA_spectral_indices.ipynb).
+- NDVI
+- WET
+- PVR <br>
+
+#### **Mean per Month and Feature-Time-Confusion** 
+We calculate for each field the mean values of each feature and transform the the date column / months column and combine it to the features.
+
+|Field ID | Month      | Feature     |
+|-------- | -----------| ----------- | 
+|1        | 4          | 0.4         |
+|1        | 5          | 0.7         |
+
+to
+
+
+|Field ID | Feature of Month 4  | Feature of Month 5 |
+|-------- | -----------| ----------- | 
+|1        | 0.4        | 0.7         |
 
 ### Train-Test-Split
 
