@@ -24,10 +24,6 @@ df = pd.read_csv('data/mean_band_perField_perDate.csv')
 # ****************************************************************
 # Cloudmasking
 
-# df_woCLM = cloud_mask(df)
-# print(f'Rows of Original Data: {df.shape[0]}')
-# print(f'Rows of Without Cloud Data: {df_woCLM.shape[0]}')
-
 df_tmp= cloud_mask(df, drop_unknown=True, verbose=True)
 
 print(f'Rows of Original Data: {df.shape[0]}')
