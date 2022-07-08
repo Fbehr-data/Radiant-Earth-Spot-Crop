@@ -61,3 +61,45 @@ def cal_PVR(Band3: pd.Series, Band4: pd.Series) -> pd.Series:
         pd.Series:  Calculated PVR
     """
     return (Band3 - Band4) / (Band3 + Band4) 
+
+def cal_spectral_indices(df:pd.DataFrame) -> pd.DataFrame:
+    """Takes the Data and add additional features:
+        * NDVI
+        * WET
+        * PVR
+
+    Args:
+        df (pd.DataFrame): Full Dataset
+
+    Returns:
+        pd.DataFrame: Full Dataset with  spectral indices
+    """
+
+    # calculate Indices and PC1
+    df['NDVI'] = cal_NDVI(df.B04, df.B08)
+    df['WET'] = cal_WET(df.B02,df.B03, df.B04, df.B08, df.B11, df.B12)
+    df['PVR'] = cal_PVR(df.B03, df.B04)
+
+    # Fill NA values with zero
+    # df = df.fillna(value=0)
+    return df 
+
+def drop_na(df:pd.DataFrame, verbose:bool = False) -> pd.DataFrame:
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): Data with all features
+        verbose (bool, optional): Print information about loose of information (rows). Defaults to False.
+
+    Returns:
+        pd.DataFrame: Data without NA
+    """
+    df_wo_NA = df.dropna(axis = 0)
+    
+    # Print Loose of information
+    if verbose:
+        print(f'Rows without NA:               {df_wo_NA.shape[0]}')
+        print(f'Rows of Origin:                {df.shape[0]}')
+        print(f'Precentage of remaining Data:  {round((df_wo_NA.shape[0] / df.shape[0]) * 100, 3)} %')
+
+    return df_wo_NA
