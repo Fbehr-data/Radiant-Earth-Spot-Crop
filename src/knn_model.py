@@ -19,10 +19,7 @@ import pandas as pd
 # The goal of this file will be the modeling based on the KNN 
 from imblearn.over_sampling import SMOTE
 from sklearn.neighbors import KNeighborsClassifier
-from xgboost import XGBClassifier, DMatrix, cv
 from sklearn.model_selection import GridSearchCV
-from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
-import hyperopt.pyll.stochastic
 from sklearn.metrics import (
     accuracy_score,
     f1_score,
@@ -49,15 +46,6 @@ cmap = sns.color_palette("crest", 6)    # six colors are created this way
 sns.set(rc = {"figure.dpi":300})        # size of the figues and font size are created this way
 sns.set(rc = {"figure.figsize":(6,3)})
 sns.set(font_scale = 0.5)
-
-# import own modules from the scr folder
-from train_test_function import train_test_split_fields
-from eda_functions import (
-    plot_confusion_matrix,
-    get_label_accuracies,
-    plot_label_accuracy,
-    plot_feature_importance
-    )
 
 # set a random seed
 RSEED = 42
