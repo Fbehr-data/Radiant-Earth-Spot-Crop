@@ -4,14 +4,14 @@
 # Typer is used as CLI
 import typer
 from src.find_repo_root import get_repo_root
-from src.preprocessing_01_download_data_class import PreprocessingDownload
-from src.preprocessing_02_convert_to_npz_class import ConversionToNPZ
-from src.preprocessing_03_calculate_mean_band_class import CalculateMeanPerBand
+from src.preprocessing_01_download_data import PreprocessingDownload
+from src.preprocessing_02_convert_to_npz import ConversionToNPZ
+from src.preprocessing_03_calculate_mean_band import CalculateMeanPerBand
 
 # set root directory
 ROOT_DIR = get_repo_root()
 
-# create a typer object for the preprocessing
+# create a Typer object for the preprocessing
 preprocessing = typer.Typer()
 
 @preprocessing.command()
