@@ -148,7 +148,7 @@ def load_df(collection_id:str) -> pd.DataFrame:
 
 if __name__ == "__main__":
     # change the working directory
-    os.chdir(f"{IMAGE_DIR}")
+    os.chdir(IMAGE_DIR)
 
     # start the download
     for split in ["train"]:
@@ -183,4 +183,4 @@ if __name__ == "__main__":
     used_bands.to_pickle("used_bands.pkl")
 
     # change the working directory
-    os.chdir("../")
+    os.chdir(ROOT_DIR)
