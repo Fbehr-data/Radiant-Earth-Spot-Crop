@@ -1,4 +1,4 @@
-## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-06 ##
+## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-11 ##
 ## The script is based on the solution of Kiminya for the Zindi: Spot the crop challenge.
 ## https://github.com/RadiantMLHub/spot-the-crop-challenge/tree/main/2nd%20place%20-%20Kiminya
 
@@ -11,6 +11,9 @@ from tqdm.auto import tqdm
 from collections import OrderedDict
 
 class CalculateMeanPerBand():
+    """ Class to calculate the mean per band 
+        for each field for each date.
+    """
     def __init__(self, ROOT_DIR:str) -> None:
         # set the directory and the chunks in which the larger fields are splitted 
         self.ROOT_DIR = ROOT_DIR
@@ -47,8 +50,9 @@ class CalculateMeanPerBand():
         mode = np.squeeze(mode[0],axis=0).transpose(1,0)    # reshapes the array into the form (dates, band)
         return mode
 
-
     def start_calculation(self):
+        """ Start the calculation process.
+        """
         # load the data frame and add the path information of the npz objects for each field to the data frame
         df = pd.read_pickle(f"{self.DATA_DIR}/meta_data_fields_bands.pkl")
         df["path"] = self.BANDS_DIR + df.field_id.astype(str) + ".npz"

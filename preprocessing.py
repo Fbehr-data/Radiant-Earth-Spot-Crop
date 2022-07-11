@@ -1,4 +1,8 @@
-## Preprocessing: download, file conversion to npz, calculation of band means # Max Langer # 2022-07-11 ##
+## Preprocessing: 
+# download, 
+# file conversion to npz, 
+# calculation of band means 
+## Max Langer # 2022-07-11 ##
 
 # import the needed modules
 # Typer is used as CLI

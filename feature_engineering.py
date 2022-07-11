@@ -1,4 +1,8 @@
-## Preprocessing: download, file conversion to npz, calculation of band means # Max Langer # 2022-07-11 ##
+## Feature engineering: 
+# work with the cloud mask, 
+# calculation of indices, 
+# calculation of the mean per month for each band and index
+## Felix Behrendt & Max Langer # 2022-07-11 ##
 
 # import the needed modules
 # Typer is used as CLI

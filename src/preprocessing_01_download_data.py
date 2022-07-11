@@ -1,4 +1,4 @@
-## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-06 ##
+## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-11 ##
 ## The script is based on the tutorial by the Radiant Earth Foundation for the Zindi: Spot the crop challenge.
 ## https://github.com/radiantearth/mlhub-tutorials/tree/main/notebooks/South%20Africa%20Crop%20Types%20Competition
 
@@ -14,6 +14,9 @@ from collections import OrderedDict
 
 
 class PreprocessingDownload():
+    """ Class for downloading the raw data 
+        from the MLHUB of the Radiant Earth Foundation.
+    """
     def __init__(self, ROOT_DIR:str) -> None:
         # set the directories to which the data is downloaded
         self.ROOT_DIR = ROOT_DIR
@@ -146,6 +149,8 @@ class PreprocessingDownload():
         return pd.DataFrame(rows, columns=["tile_id", "datetime", "satellite_platform", "asset", "file_path"])
 
     def start_download(self):
+        """ Starts the downloading process. 
+        """
         # change the working directory
         os.chdir(self.IMAGE_DIR)
 

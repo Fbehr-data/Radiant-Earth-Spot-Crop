@@ -1,4 +1,4 @@
-## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-06 ##
+## Preprocessing 03: Calculation of the mean of the bands # Max Langer # 2022-07-11 ##
 ## The script is based on the solution of Kiminya for the Zindi: Spot the crop challenge.
 ## https://github.com/RadiantMLHub/spot-the-crop-challenge/tree/main/2nd%20place%20-%20Kiminya
 
@@ -12,6 +12,9 @@ from tqdm.auto import tqdm
 import rasterio
 
 class ConversionToNPZ():
+  """ Class to convert the TIF files from the 
+      satellite data into arrays and save them as NPZ files. 
+  """
   def __init__(self, ROOT_DIR:str) -> None:
     # set the directories
     self.ROOT_DIR = ROOT_DIR
@@ -89,6 +92,8 @@ class ConversionToNPZ():
     return df
 
   def start_conversion(self):
+    """ Starts the conversion process.
+    """
     # load the data
     print("Loading the image info... \n")
     df_images = pd.read_csv(f"{self.IMAGE_DIR}/images_info_data.csv")
