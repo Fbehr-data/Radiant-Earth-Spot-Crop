@@ -19,6 +19,17 @@ class CalculateMeanPerBand():
         self.ROOT_DIR = ROOT_DIR
         self.DATA_DIR = f"{self.ROOT_DIR}/data"
         self.BANDS_DIR = f"{self.DATA_DIR}/bands-raw/" 
+        self.IMAGE_DIR = f"{self.DATA_DIR}/images"
+
+    def get_bands(self) -> list:
+        """ Load the used bands.
+
+        Returns:
+            list: List of the used bands.
+        """
+        bands = pd.read_pickle(f"{self.IMAGE_DIR}/used_bands.pkl")
+        bands = bands.used_bands.tolist()
+        return bands
 
     def get_clm(self, bands:np.array):
         """ Extracts the cloud mask band from an array of bands.
@@ -96,7 +107,7 @@ class CalculateMeanPerBand():
         all_labels = np.concatenate(labels)
 
         # put all different information into one data frame
-        cols = ['B02', 'B03', 'B04', 'B08', 'B11', 'B12', 'CLM']
+        cols = self.get_bands()
         df_data = pd.DataFrame(all_features,columns=cols)
         df_data.insert(0,'field_id',all_field_ids)
         df_data.insert(1,'tile_id',all_tile_ids)
