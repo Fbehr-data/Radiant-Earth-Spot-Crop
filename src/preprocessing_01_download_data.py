@@ -8,12 +8,15 @@ import numpy as np
 import pandas as pd
 import tarfile,json
 from pathlib import Path
+from tqdm.auto import tqdm
 from radiant_mlhub.client import _download as download_file
 from collections import OrderedDict
+from find_repo_root import get_repo_root
 
 
 # set the directories to which the data is downloaded
-DATA_DIR = "./data"
+ROOT_DIR = get_repo_root()
+DATA_DIR = f"{ROOT_DIR}/data"
 os.makedirs(DATA_DIR, exist_ok=True)
 IMAGE_DIR = f"{DATA_DIR}/images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
@@ -91,7 +94,7 @@ def load_df(collection_id:str) -> pd.DataFrame:
             continue
         item_links.append(link["href"])
         
-    for item_link in item_links:
+    for item_link in tqdm(item_links):
         item_path = f"{collection_id}/{item_link}"
         current_path = os.path.dirname(item_path)
         item = json.load(open(item_path, "r"))
@@ -166,12 +169,18 @@ if __name__ == "__main__":
     print("Finished downloading the data!")
 
     # load the info of the images into a CSV file
-    print(f"Load the image info.")
+    print(f"Load the image info. This may take a while...")
     df_images = load_df(f"{FOLDER_BASE}_train_labels")
 
     # save the data into a csv file
     print(f"Saving the image info into a CSV file to {IMAGE_DIR}/images_info_data.csv")
     df_images.to_csv("images_info_data.csv", index=False)
+
+    # save the used bands into a pickle file
+    print(f"Saving the used band info into a pkl file to {IMAGE_DIR}/used_bands.pkl")
+    used_bands = [k for k,v in DOWNLOAD_S2.items() if v==True]
+    used_bands = pd.DataFrame({"used_bands": used_bands})
+    used_bands.to_pickle("used_bands.pkl")
 
     # change the working directory
     os.chdir("../")

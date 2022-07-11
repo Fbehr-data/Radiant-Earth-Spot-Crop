@@ -9,10 +9,12 @@ import pandas as pd
 from scipy import stats
 from tqdm.auto import tqdm
 from collections import OrderedDict
+from find_repo_root import get_repo_root
 
 
 # set the directory and the chunks in which the larger fields are splitted 
-DATA_DIR = "./data"
+ROOT_DIR = get_repo_root()
+DATA_DIR = f"{ROOT_DIR}/data"
 BANDS_DIR = f"{DATA_DIR}/bands-raw/" 
 
 

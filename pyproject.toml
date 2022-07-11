@@ -20,6 +20,8 @@ xgboost = "^1.6.1"
 hyperopt = "^0.2.7"
 xarray = "^2022.3.0"
 rioxarray = "^0.11.1"
+GitPython = "^3.1.27"
+typer = "^0.5.0"
 
 [tool.poetry.dev-dependencies]
 
