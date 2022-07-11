@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import os
+from find_repo_root import get_repo_root
 
 
 from spectral_indices import cal_spectral_indices, drop_na
@@ -11,15 +12,12 @@ from average_per_mean_function import feat_engi_date
 #from imblearn.over_sampling import SMOTE
 
 
-# Set Working Directory
-#path = os.getcwd()
-path = '/Users/felixbehrendt/neuefische/Radiant-Earth-Spot-Crop/'
-# Set Workign directory and print
-os.chdir(path)
-print(f'Current Working directory: {path}')
+# Get function 
+root_path = get_repo_root()
+data_path = f"{root_path}/data/mean_band_perField_perDate.csv"
 
 # Load data
-df = pd.read_csv('data/mean_band_perField_perDate.csv')
+df = pd.read_csv(data_path)
 
 # ****************************************************************
 # Cloudmasking
@@ -51,4 +49,5 @@ df_tmp = df_tmp_x.dropna()
 print(f'Lost number of fields: {df_tmp_x.shape[0] - df_tmp.shape[0]}')
 
 # Save data
-#df_tmp.to_csv('data/data_after_FE.csv', index = False)
+df_tmp.to_csv('data/test_FE.csv', index = False)
+# df_tmp.to_csv('data/data_after_FE.csv', index = False)
