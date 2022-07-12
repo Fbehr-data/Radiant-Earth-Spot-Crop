@@ -71,7 +71,7 @@ class ResamplingProcess():
         # save the resample data set as csv file 
         df_class1.to_csv(f'{self.DATA_DIR}/Train_Dataset4.csv',index=False) # create a csv file
         self.df_test.to_csv(f'{self.DATA_DIR}/Test_Dataset.csv',index=False)
-        print(f"")
+        print(f"Save the train and test data to {self.DATA_DIR}")
     
     def start_resampling(self):
         """ Run the resampling process and create a data set
