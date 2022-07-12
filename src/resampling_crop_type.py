@@ -1,5 +1,8 @@
 # import the needed modules
+from cProfile import label
+from itertools import groupby
 from zlib import DEF_MEM_LEVEL
+from numpy import number
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
@@ -38,10 +41,17 @@ class ResamplingProcess():
         """ Oversamples the underrepresented crop classes.
         """
         # use the new dataset to define the desired sample size
-        self.n_class_5 = self.df_label_comb[self.df_label_comb.label==5].shape[0]
-        self.class_5 = self.df_label_comb[self.df_label_comb.label==5]
+        label_ranking = self.df_label_comb[["label", "field_id"]] \
+            .groupby("label").count().sort_values("field_id").reset_index()
+        sampling_base_class_idx = int((len(label_ranking)/2) - 1)
+        self.sampling_base_class = int(label_ranking.iloc[sampling_base_class_idx]["label"])
+        self.sampling_size = int(label_ranking.iloc[sampling_base_class_idx]["field_id"])
+        self.classes_to_oversample = label_ranking[0:sampling_base_class_idx]["label"]
+        self.classes_to_undersample = label_ranking[sampling_base_class_idx+1:len(label_ranking)]["label"]
+
+
         # from the new dataset  create the subset of classes i want to oversample
-        df_over = self.df_label_comb.loc[self.df_label_comb['label'].isin([3, 1, 8])]
+        df_over = self.df_label_comb.loc[self.df_label_comb['label'].isin(self.classes_to_oversample)]
         #from our subset define the target and features
         X_over= df_over.drop('label',axis=1)
         y_over = df_over['label']
