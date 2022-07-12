@@ -33,6 +33,8 @@ Max Langer:
 Samuel Kirmeier:
 
 Timo Fischer:
+- I am a neurobiologist and searching for new career options in the data science world, since this will gain importance in the upcoming years
+- Find me on [GitHub](https://github.com/walterwhiteuhh), [LinkedIn](https://www.linkedin.com/in/drtimofischer/)
 
 ---
 ## Data Structure
