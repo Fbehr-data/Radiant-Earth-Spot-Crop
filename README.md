@@ -16,7 +16,9 @@ The objective of the project:
 
 ---
 ## The Team
-Anitha Grace:
+Anitha Grace: 
+- I studied Water and Environmental Engineering and I am looking into becoming a data scientist.
+- Find me on [GitHub](https://github.com/uwinema), [LinkedIn](https://www.linkedin.com/in/anitha-grace-uwinema-17b348240/)
 
 Felix Behrendt:
 - I studied Geoinformatics and love to gain more professional experience in data science.
