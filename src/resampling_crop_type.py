@@ -31,8 +31,8 @@ class ResamplingProcess():
     def merge_crop_types(self):
         # create a copy dataset with only 8 classes instead of 9 (8 and 9 were combined together in one class)
         self.df_label_comb= self.df_train.copy()
-        self.df_label_comb
         self.df_label_comb["label"].replace({9:8}, inplace=True)
+        self.df_test["label"].replace({9:8}, inplace=True)
 
     def oversampling(self):
         """ Oversamples the underrepresented crop classes.
