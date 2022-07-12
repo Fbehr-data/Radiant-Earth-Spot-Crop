@@ -71,6 +71,7 @@ class CalculateMeanPerBand():
         # extract the field data from the npz files 
         # and calculate the mean of each field for each band on each date
         field_ids = []
+        field_sizes = []
         labels = []
         dates = []
         features = []
@@ -93,6 +94,8 @@ class CalculateMeanPerBand():
             field_ids.append(field_id)                          # add the field ids array to the field ids list
             tile_id = np.repeat(row.tile_id,feature.shape[0])
             tile_ids.append(tile_id)
+            field_size = np.repeat(row.field_size,feature.shape[0])       # get an array of the labels, of the same size as the date array of the current feature
+            field_sizes.append(field_size) 
             label = np.repeat(row.label,feature.shape[0])       # get an array of the labels, of the same size as the date array of the current feature
             labels.append(label)                                # add the label array to the labels list
             date = [str(d)[:10] for d in row.dates]             # goes through the dates in each row and saves them to a list without the time [-> [:10]]
@@ -103,16 +106,18 @@ class CalculateMeanPerBand():
         all_features = np.concatenate(features)
         all_field_ids = np.concatenate(field_ids)
         all_tile_ids = np.concatenate(tile_ids)
+        all_field_sizes = np.concatenate(field_sizes)
         all_dates = np.concatenate(dates)
         all_labels = np.concatenate(labels)
 
         # put all different information into one data frame
         cols = self.get_bands()
         df_data = pd.DataFrame(all_features,columns=cols)
-        df_data.insert(0,'field_id',all_field_ids)
-        df_data.insert(1,'tile_id',all_tile_ids)
-        df_data.insert(2,'date',all_dates)
-        df_data.insert(3,'label',all_labels)
+        df_data.insert(0,"field_id",all_field_ids)
+        df_data.insert(1,"tile_id",all_tile_ids)
+        df_data.insert(2,"field_size", all_field_sizes)
+        df_data.insert(3,"date",all_dates)
+        df_data.insert(4,"label",all_labels)
 
         # save the data frame as CSV file
         print(f"Saving the data into {self.DATA_DIR}/mean_band_perField_perDate.csv")
