@@ -1,4 +1,5 @@
 # import the needed modules
+from zlib import DEF_MEM_LEVEL
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
@@ -37,18 +38,21 @@ class ResamplingProcess():
         """ Oversamples the underrepresented crop classes.
         """
         # use the new dataset to define the desired sample size
-        self.n_class_1 = self.df_label_comb[self.df_label_comb.label==1].shape[0]
-        self.class_1 = self.df_label_comb[self.df_label_comb.label==1]
+        self.n_class_5 = self.df_label_comb[self.df_label_comb.label==5].shape[0]
+        self.class_5 = self.df_label_comb[self.df_label_comb.label==5]
         # from the new dataset  create the subset of classes i want to oversample
-        df_over = self.df_label_comb.loc[self.df_label_comb['label'].isin([5,6,3,8])]
+        df_over = self.df_label_comb.loc[self.df_label_comb['label'].isin([3, 1, 8])]
         #from our subset define the target and features
         X_over= df_over.drop('label',axis=1)
         y_over = df_over['label']
         # oversample the X_under and y_under
-        strategy = { 8:self.n_class_1, 3:self.n_class_1, 5:self.n_class_1, 6:self.n_class_1}
+        strategy = {
+            3:self.n_class_5, 
+            1:self.n_class_5, 
+            8:self.n_class_5}
         over = RandomOverSampler(sampling_strategy=strategy)
         X_overS, y_overS = over.fit_resample(X_over, y_over)
-        print(f"overSampling: {Counter(y_overS)}")
+        print(f"oversampled: {Counter(y_overS)}")
         # create a set of oversampled data by merging the above sampled feature and Target
         self.df_overS = pd.concat([X_overS,y_overS],axis= 1)
 
@@ -56,22 +60,27 @@ class ResamplingProcess():
         """ Undersamples the overrepresented crop classes.
         """
         # repeat the same thing for undersampling
-        df_under = self.df_label_comb.loc[self.df_label_comb['label'].isin([4,2,7])]
+        df_under = self.df_label_comb.loc[self.df_label_comb['label'].isin([4, 2, 7, 6])]
         X_under= df_under.drop('label',axis=1)
         y_under = df_under['label']
-        strategy = {4:self.n_class_1,2:self.n_class_1,7:self.n_class_1}
+        strategy = {
+            4:self.n_class_5, 
+            2:self.n_class_5, 
+            7:self.n_class_5, 
+            6:self.n_class_5
+            }
         under = RandomUnderSampler(sampling_strategy=strategy)
         X_underS, y_underS = under.fit_resample(X_under, y_under)
-        print(f"underSampling: {Counter(y_underS)}")
+        print(f"undersampled: {Counter(y_underS)}")
         self.df_underS = pd.concat([X_underS,y_underS],axis= 1)
 
     def save_train_test_data(self):
         # create a balanced dataset by merging the 3 subsset we created above
-        df_class1= pd.concat([self.df_overS, self.df_underS, self.class_1],axis=0)
+        df_resampled= pd.concat([self.df_overS, self.df_underS, self.class_5],axis=0)
         # save the resample data set as csv file 
-        df_class1.to_csv(f'{self.DATA_DIR}/Train_Dataset4.csv',index=False) # create a csv file
+        df_resampled.to_csv(f'{self.DATA_DIR}/Train_Dataset4.csv',index=False) # create a csv file
         self.df_test.to_csv(f'{self.DATA_DIR}/Test_Dataset.csv',index=False)
-        print(f"Save the train and test data to {self.DATA_DIR}")
+        print(f"Save the train and test data to {self.DATA_DIR} as Train_Dataset4.csv and Test_Dataset.csv")
     
     def start_resampling(self):
         """ Run the resampling process and create a data set
