@@ -16,7 +16,8 @@ The objective of the project:
 
 ---
 ## The Team
-Anitha Grace: 
+
+Anitha Grace Uwinema: 
 - I studied Water and Environmental Engineering and I am looking into becoming a data scientist.
 - Find me on [GitHub](https://github.com/uwinema), [LinkedIn](https://www.linkedin.com/in/anitha-grace-uwinema-17b348240/)
 
@@ -113,7 +114,11 @@ Currently our package provides two solution. The first option is to keep all the
 In the field of remote sensing the actual bands are used to calculate spectral indices. These indices represent different information about the measured object. For example: The Normalized Difference Vegetation Index (NDVI) which is an indicator of the vitality of vegetation. A full list of indices can be found [here](https://www.indexdatabase.de/db/is.php?sensor_id=96). We calculate these indices based on the [EDA](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/EDA_spectral_indices.ipynb).
 - NDVI
 - WET
-- PVR <br>
+- PVR 
+- VARI_green
+- MNSI
+- NDRE
+- GARI<br>
 
 #### **Mean per Month and Feature-Time-Confusion** 
 We calculate for each field the mean values of each feature and transform the the date column / months column and combine it to the features.
