@@ -32,7 +32,7 @@ def combine_feature_date(df:pd.DataFrame) -> pd.DataFrame:
       pd.DataFrame: returned transformed data
   """
   # get list of features
-  features = list(set(df) - set(['field_id', 'month', 'label']))
+  features = list(set(df) - set(['field_id', 'month', 'label', 'field_size']))
 
   # pivot for each month over field id --> Combine feature and Time
   df_res = df.pivot(index='field_id', columns='month', values=features).reset_index()
