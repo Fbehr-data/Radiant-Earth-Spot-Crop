@@ -69,7 +69,7 @@ class ResamplingProcess():
         # get the classes for which we need to do over- and undersampling
         sampling_base_label_idx = self.get_base_label_index(label_ranking) 
         classes_to_oversample = label_ranking[0:sampling_base_label_idx]["label"]
-        classes_to_undersample = label_ranking[sampling_base_label_idx+1:len(label_ranking)]["label"]
+        classes_to_undersample = label_ranking[sampling_base_label_idx+1:]["label"]
         return classes_to_oversample, classes_to_undersample
 
     def do_resampling(self, df_label_comb:pd.DataFrame, oversampling:bool, labels_to_resample:pd.Series, 
@@ -82,13 +82,14 @@ class ResamplingProcess():
         # set the resampling method
         if oversampling:
             resampler = RandomOverSampler(sampling_strategy=strategy)
-            method = "oversampled"
+            method = "oversampling"
         else:
             resampler = RandomUnderSampler(sampling_strategy=strategy)
-            method = "undersampled" 
+            method = "undersampling" 
         # start the resampling process
+        print(f"label distribution before {method}: {Counter(y_resampling)}")
         X_resampled, y_resampled = resampler.fit_resample(X_resampling, y_resampling)
-        print(f"{method} labels: {Counter(y_resampled)}")
+        print(f"label distribution after {method}: {Counter(y_resampled)} \n")
         # create a frame of the resampled data by merging the resampled features and target
         df_resampled = pd.concat([X_resampled,y_resampled],axis= 1)
         return df_resampled
