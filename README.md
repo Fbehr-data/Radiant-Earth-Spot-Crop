@@ -136,5 +136,20 @@ to
 |1        | 0.4        | 0.7         |
 
 ### Train-Test-Split
+Splitting our dataset is essential for an unbiased evaluation of prediction performance.we split randomly our dataset into 3 subset:
+- Training set : is applied to train, or fit, the model
+- Validation set :is used for unbiased model evaluation during hyperparameter tuning
+- Test set:is needed for an unbiased evaluation of the final model.
+Now, in order to do that we need first to import the train_test_split function that we created ,like this:
+```BASH
+from train_test_function import train_test_split_fields
+```
+the split is done by that function ,we only set the train_size as the test_size will adjust accordingly. we also set the random_state to 42.
 
 ### Resampling
+In the training set we have skewed class proportions.To solve the imbalanced classification problem , we are first going to combine class 8 and 9 into one class .Then we do the resampling using 2 techniques :downsampling the majority classes and upweighting the minority classes using Random UnderSample and OverSample from the library called imblearn.For more details check Dataset 4 in this notebook(https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
+
+
+
+
+
