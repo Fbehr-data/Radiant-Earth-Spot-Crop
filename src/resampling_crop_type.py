@@ -46,69 +46,55 @@ class ResamplingProcess():
             .groupby("label").count().sort_values("field_id").reset_index()
         return label_ranking
     
-    def get_sampling_base_label(self, label_ranking:pd.DataFrame
+    def get_base_label_index(self, label_ranking:pd.DataFrame
         ) -> int:
-        # get the index and label of a label in the middle of the ranking
+        # get the index and label of a label in the middle of the ranking (the base label)
         sampling_base_label_idx = int((len(label_ranking)/2) - 1)
         return sampling_base_label_idx
 
     def get_base_label_df(self, df_label_comb:pd.DataFrame, label_ranking:pd.DataFrame
         ) -> pd.DataFrame:
-        sampling_base_label_idx = self.get_sampling_base_label(label_ranking)
+        # get the data for the label to resample on (base label)
+        sampling_base_label_idx = self.get_base_label_index(label_ranking)
         sampling_base_label = label_ranking.iloc[sampling_base_label_idx]["label"]
         df_base_label = df_label_comb[df_label_comb["label"]==sampling_base_label]
         return df_base_label
 
     def get_resampling_size(self, label_ranking:pd.DataFrame
         ) -> int:
-        # get the index of the label to resample on
-        sampling_base_label_idx = self.get_sampling_base_label(label_ranking) 
-        # set the sampling size to the middle label
+        # get the index of the label to resample on and set the sample size to that label
+        sampling_base_label_idx = self.get_base_label_index(label_ranking) 
         sampling_size = int(label_ranking.iloc[sampling_base_label_idx]["field_id"])
         return sampling_size 
 
-    def get_classes_to_resample(self, label_ranking:pd.DataFrame
+    def get_labels_to_resample(self, label_ranking:pd.DataFrame
         ) -> Union[pd.Series, pd.Series]:
-        sampling_base_label_idx = self.get_sampling_base_label(label_ranking) 
+        # get the classes for which we need to do over- and undersampling
+        sampling_base_label_idx = self.get_base_label_index(label_ranking) 
         classes_to_oversample = label_ranking[0:sampling_base_label_idx]["label"]
         classes_to_undersample = label_ranking[sampling_base_label_idx+1:len(label_ranking)]["label"]
         return classes_to_oversample, classes_to_undersample
 
-    def do_oversampling(self, df_label_comb:pd.DataFrame, classes_to_oversample:pd.Series, 
+    def do_resampling(self, df_label_comb:pd.DataFrame, oversampling:bool, labels_to_resample:pd.Series, 
         resampling_size:int) -> pd.DataFrame:
-        """ Oversamples the underrepresented crop classes.
-        """
-        # create a subset of labels we want to oversample
-        df_over = df_label_comb.loc[df_label_comb['label'].isin(classes_to_oversample)]
-        # from our subset define the target and features
-        X_over = df_over.drop('label',axis=1)
-        y_over = df_over['label']
-        # set the classes to be oversampled
-        strategy = {x:resampling_size for x in classes_to_oversample}
-        # start the oversampling process
-        oversampler = RandomOverSampler(sampling_strategy=strategy)
-        X_overS, y_overS = oversampler.fit_resample(X_over, y_over)
-        print(f"oversampled labels: {Counter(y_overS)}")
-        # create a frame of oversampled data by merging the above sampled feature and target
-        df_overS = pd.concat([X_overS,y_overS],axis= 1)
-        return df_overS
-
-    def do_undersampling(self, df_label_comb:pd.DataFrame, classes_to_undersample:pd.Series, 
-        resampling_size:int) -> pd.DataFrame:
-        # create a subset of labels we want to undersample
-        df_under = df_label_comb.loc[df_label_comb['label'].isin(classes_to_undersample)]
-        # undersample the X_under and y_under
-        X_under= df_under.drop('label',axis=1)
-        y_under = df_under['label']
-        # set the classes to be undersampled
-        strategy = {x:resampling_size for x in classes_to_undersample}
-        # start the undersampling process
-        undersampler = RandomUnderSampler(sampling_strategy=strategy)
-        X_underS, y_underS = undersampler.fit_resample(X_under, y_under)
-        print(f"undersampled labels: {Counter(y_underS)}")
-        # create a frame of undersampled data by merging the above sampled feature and target
-        df_underS = pd.concat([X_underS,y_underS],axis= 1)
-        return df_underS
+        # create a data subset for the labels, which we want to resample 
+        df_resampling = df_label_comb.loc[df_label_comb['label'].isin(labels_to_resample)]
+        X_resampling = df_resampling.drop('label',axis=1)
+        y_resampling = df_resampling['label']
+        strategy = {x:resampling_size for x in labels_to_resample}
+        # set the resampling method
+        if oversampling:
+            resampler = RandomOverSampler(sampling_strategy=strategy)
+            method = "oversampled"
+        else:
+            resampler = RandomUnderSampler(sampling_strategy=strategy)
+            method = "undersampled" 
+        # start the resampling process
+        X_resampled, y_resampled = resampler.fit_resample(X_resampling, y_resampling)
+        print(f"{method} labels: {Counter(y_resampled)}")
+        # create a frame of the resampled data by merging the resampled features and target
+        df_resampled = pd.concat([X_resampled,y_resampled],axis= 1)
+        return df_resampled
 
     def save_train_test_data(self, df_oversampled:pd.DataFrame, 
         df_undersampled:pd.DataFrame, df_base_label:pd.DataFrame, df_test_label_comb:pd.DataFrame):
@@ -130,25 +116,30 @@ class ResamplingProcess():
         """
         # load the train and test data
         df_train, df_test = self.get_train_test_data()
-        # merge labes 8 and 9 for train and test data 
+        # merge labels 8 and 9 for train and test data 
         df_train_label_comb, df_test_label_comb = self.merge_crop_labels(df_train, df_test)
         # make a ranking of the count of the labels 
         label_ranking = self.get_label_ranking(df_train_label_comb)
         # get the size to resample on
         resampling_size = self.get_resampling_size(label_ranking)
-        # get a data frame for the data of the base label, on which is resampled
+        # get a data frame for the data of the base label, on which the resampling is done
         df_base_label = self.get_base_label_df(df_train_label_comb, label_ranking)
-        classes_to_oversample, classes_to_undersample = self.get_classes_to_resample(label_ranking)
-        df_oversampled = self.do_oversampling(
-            df_train_label_comb, 
-            classes_to_oversample, 
-            resampling_size
+        # get the labels to over- and undersample
+        labels_to_oversample, labels_to_undersample = self.get_labels_to_resample(label_ranking)
+        # over- and undersample
+        df_oversampled = self.do_resampling(
+            df_label_comb=df_train_label_comb, 
+            oversampling=True,
+            labels_to_resample=labels_to_oversample,
+            resampling_size=resampling_size
         )
-        df_undersampled = self.do_undersampling(
-            df_train_label_comb, 
-            classes_to_undersample, 
-            resampling_size
+        df_undersampled = self.do_resampling(
+            df_label_comb=df_train_label_comb, 
+            oversampling=False,
+            labels_to_resample=labels_to_undersample, 
+            resampling_size=resampling_size
         )
+        # save the final data frames for the train and test data
         self.save_train_test_data(
             df_oversampled, 
             df_undersampled, 
