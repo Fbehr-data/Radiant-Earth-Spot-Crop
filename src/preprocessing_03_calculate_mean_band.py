@@ -76,6 +76,11 @@ class CalculateMeanPerBand():
         features = []
         tile_ids = []
 
+        # empty data for texture metrics
+        list_correlation = []
+        list_homogeneity = []
+        list_contrast = []
+
         print("Running the calculation ...")
         for _,row in tqdm(df.iterrows(), total=len(df)):
             bands = np.load(row.path)['arr_0']
@@ -96,14 +101,24 @@ class CalculateMeanPerBand():
             label = np.repeat(row.label,feature.shape[0])       # get an array of the labels, of the same size as the date array of the current feature
             labels.append(label)                                # add the label array to the labels list
             date = [str(d)[:10] for d in row.dates]             # goes through the dates in each row and saves them to a list without the time [-> [:10]]
-            date = np.array(date)                               # convert the date list to an array
-            dates.append(date)                                  # add the date array to the dates                               # add the date array to the dates
-
+            date = np.array(date)                               # add the date array to the dates
+            dates.append(date)                                  # add the date array to the dates
+            # texture metrics
+            correlation = [cor for cor in row.correlation]                             # convert the date list to an array
+            list_correlation.append(correlation)
+            homogeneity = [cor for cor in row.homogeneity]                             # convert the date list to an array
+            list_homogeneity.append(homogeneity)
+            contrast = [cor for cor in row.contrast] 
+            list_contrast.append(contrast)
+            
         # put all of the list information into an array
         all_features = np.concatenate(features)
         all_field_ids = np.concatenate(field_ids)
         all_tile_ids = np.concatenate(tile_ids)
         all_dates = np.concatenate(dates)
+        all_correlation = np.concatenate(list_correlation)
+        all_homogeneity = np.concatenate(list_homogeneity)
+        all_contrast = np.concatenate(list_contrast)
         all_labels = np.concatenate(labels)
 
         # put all different information into one data frame
@@ -113,6 +128,9 @@ class CalculateMeanPerBand():
         df_data.insert(1,'tile_id',all_tile_ids)
         df_data.insert(2,'date',all_dates)
         df_data.insert(3,'label',all_labels)
+        df_data.insert(4,'correlation', all_correlation)
+        df_data.insert(5,'homogeneity', all_homogeneity)
+        df_data.insert(6,'contrast', all_contrast)
 
         # save the data frame as CSV file
         print(f"Saving the data into {self.DATA_DIR}/mean_band_perField_perDate.csv")
