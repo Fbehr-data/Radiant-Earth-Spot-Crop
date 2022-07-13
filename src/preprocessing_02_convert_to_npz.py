@@ -105,11 +105,11 @@ class ConversionToNPZ():
     dates = []          # create empty list to catch the dates for each tile
     tiles = []          # create empty list to catch the tile ids
 
+    field_size = []
     list_correlation = [] # create empty list to catch the correlation index
     list_homogeneity = [] # create empty list to catch the homogenity index
     list_contrast = []    # create empty list to catch the contrast index
 
-    
     tile_ids = df_tiles["tile_id"].unique().tolist()
     bands = self.get_bands()
 
@@ -166,9 +166,22 @@ class ConversionToNPZ():
 
             labels.append(field_label)                    # add the current field label
             fields.append(field_id)                       # add the current field id
+            field_size.append(np.count_nonzero(mask))     # add the field size
             tiles.append(tile_id)                         # add the current tile id
             dates.append(tile_dates)                      # add the dates which are available for the current tile
-    df = pd.DataFrame(dict(field_id=fields,tile_id=tiles,label=labels,dates=dates, correlation=list_correlation, homogeneity =list_homogeneity, contrast =list_contrast)) # create a dataframe from the meta data
+
+    df = pd.DataFrame(
+      dict(
+        field_id=fields,
+        tile_id=tiles,
+        label=labels,
+        field_size=field_size,
+        dates=dates,
+        correlation=list_correlation,
+        homogeneity =list_homogeneity, 
+        contrast =list_contrast
+        )
+      ) # create a dataframe from the meta data
     return df
 
   def start_conversion(self):
@@ -223,10 +236,13 @@ class ConversionToNPZ():
     print(f"Training bands saved to {self.BANDS_DIR}")
     print(f"Training meta data saved to {self.DATA_DIR}/meta_data_fields_bands.pkl")
 
-    
+
+def main(ROOT_DIR:str):
+  ROOT_DIR = get_repo_root()
+  conversion = ConversionToNPZ(ROOT_DIR)
+  conversion.start_conversion()
 
 if __name__ == "__main__":
-    from find_repo_root import get_repo_root
-    ROOT_DIR = get_repo_root()
-    conversion = ConversionToNPZ(ROOT_DIR)
-    conversion.start_conversion()
+  from find_repo_root import get_repo_root
+  ROOT_DIR = get_repo_root()
+  main(ROOT_DIR) 

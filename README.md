@@ -16,7 +16,10 @@ The objective of the project:
 
 ---
 ## The Team
-Anitha Grace:
+
+Anitha Grace Uwinema: 
+- I studied Water and Environmental Engineering and I am looking into becoming a data scientist.
+- Find me on [GitHub](https://github.com/uwinema), [LinkedIn](https://www.linkedin.com/in/anitha-grace-uwinema-17b348240/)
 
 Felix Behrendt:
 - I studied Geoinformatics and love to gain more professional experience in data science.
@@ -111,7 +114,11 @@ Currently our package provides two solution. The first option is to keep all the
 In the field of remote sensing the actual bands are used to calculate spectral indices. These indices represent different information about the measured object. For example: The Normalized Difference Vegetation Index (NDVI) which is an indicator of the vitality of vegetation. A full list of indices can be found [here](https://www.indexdatabase.de/db/is.php?sensor_id=96). We calculate these indices based on the [EDA](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/EDA_spectral_indices.ipynb).
 - NDVI
 - WET
-- PVR <br>
+- PVR 
+- VARI_green
+- MNSI
+- NDRE
+- GARI<br>
 
 #### **Mean per Month and Feature-Time-Confusion** 
 We calculate for each field the mean values of each feature and transform the the date column / months column and combine it to the features.
@@ -129,5 +136,20 @@ to
 |1        | 0.4        | 0.7         |
 
 ### Train-Test-Split
+Splitting our dataset is essential for an unbiased evaluation of prediction performance. We randomly split our dataset into 3 subset:
+- Training set : is applied to train, or fit, the model
+- Validation set : is used for unbiased model evaluation during hyperparameter tuning
+- Test set: is needed for an unbiased evaluation of the final model.
+Now, in order to do that we need first to import the train_test_split function that we created, like this:
+```BASH
+from train_test_function import train_test_split_fields
+```
+the split is done by that function, we only set the train_size as the test_size will adjust accordingly. We also set the random_state to 42.
 
 ### Resampling
+In the training set we have skewed class proportions. To solve the imbalanced classification problem, we are first going to combine class 8 and 9 into one class. Then we do the resampling using 2 techniques: downsampling the majority classes and upweighting the minority classes using Random UnderSample and OverSample from the library called imblearn. For more details check Dataset 4 in this notebook(https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
+
+
+
+
+
