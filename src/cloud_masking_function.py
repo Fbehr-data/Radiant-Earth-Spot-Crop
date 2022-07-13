@@ -1,7 +1,8 @@
 # load libraries
 import pandas as pd
 
-def drop_unknown_fun(df:pd.DataFrame, verbose:bool=False) -> pd.DataFrame:
+
+def drop_unknown_fun(df: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
     """Takes the Data and removes all rows with unknown Cloudinformation
 
     Args:
@@ -17,13 +18,16 @@ def drop_unknown_fun(df:pd.DataFrame, verbose:bool=False) -> pd.DataFrame:
 
     # Print Loose of information
     if verbose:
-        print(f'Rows without unknown:             {df_wo_cloud.shape[0]}')
-        print(f'Rows with unknown:                {df.shape[0]}')
-        print(f'Precentage of remaining Data:     {round((df_wo_cloud.shape[0] / df.shape[0]) * 100, 3)} %')
+        print(f"Rows without unknown: {df_wo_cloud.shape[0]}")
+        print(f"Rows with unknown: {df.shape[0]}")
+        print(
+            f"Precentage of remaining Data: {round((df_wo_cloud.shape[0] / df.shape[0]) * 100, 3)} %"
+        )
 
     return df_wo_cloud
 
-def delete_CLM_column(df:pd.DataFrame) -> pd.DataFrame:
+
+def delete_CLM_column(df: pd.DataFrame) -> pd.DataFrame:
     """Deletes the CLM column
 
     Args:
@@ -32,11 +36,13 @@ def delete_CLM_column(df:pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Data without CLM column
     """
-    return df.drop('CLM', axis=1)
+    return df.drop("CLM", axis=1)
 
 
-def cloud_mask(df:pd.DataFrame, drop_unknown:bool = False, verbose:bool = False) -> pd.DataFrame:
-    """ Handle cloudy data in the dataset
+def cloud_mask(
+    df: pd.DataFrame, drop_unknown: bool = False, verbose: bool = False
+) -> pd.DataFrame:
+    """Handle cloudy data in the dataset
 
     Args:
         df (pd.DataFrame): Dataset (independently from dataset)
@@ -48,5 +54,5 @@ def cloud_mask(df:pd.DataFrame, drop_unknown:bool = False, verbose:bool = False)
     """
     if drop_unknown:
         df = drop_unknown_fun(df, verbose)
-    
+
     return delete_CLM_column(df)
