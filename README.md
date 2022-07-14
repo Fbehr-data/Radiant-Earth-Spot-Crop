@@ -30,7 +30,7 @@ Max Langer:
 - I am a biologist and highly motivated to build a career in data science.
 - Find me on: [GitHub](https://github.com/langer-net), [LinkedIn](https://www.linkedin.com/in/max-langer-798903127/)
 
-Samuel Kirmeier:
+Picasso
 
 Timo Fischer:
 
