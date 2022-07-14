@@ -10,6 +10,12 @@ from pathlib import Path
 from collections import OrderedDict
 from tqdm.auto import tqdm
 import rasterio
+from skimage.feature import graycomatrix, graycoprops
+from sklearn.preprocessing import MinMaxScaler
+
+
+import warnings
+warnings.filterwarnings("ignore")
 
 class ConversionToNPZ():
   """ Class to convert the TIF files from the 
@@ -23,6 +29,8 @@ class ConversionToNPZ():
     self.BANDS_DIR = f"{self.DATA_DIR}/bands-raw" 
     os.makedirs(self.BANDS_DIR, exist_ok=True)
 
+  
+
   def get_bands(self) -> list:
     """ Load the used bands.
 
@@ -32,6 +40,53 @@ class ConversionToNPZ():
     bands = pd.read_pickle(f"{self.IMAGE_DIR}/used_bands.pkl")
     bands = bands.used_bands.tolist()
     return bands
+
+  # drop zero values for patch
+  def drop_zero_values(self, GLCM:np.array) -> np.array:
+      """The calculation of the metrics need and integer array, it can not handle NA values
+        For this reason we have to delete in the GLCM all entries to the zero
+
+      Args:
+          GLCM (np.array): Grey level occurence matrix
+
+      Returns:
+          GLCM (np.array): Grey level occurence matrix without values connected to zero
+      """
+      # change 4-D Array to 2D array  
+      array_tmp = np.squeeze(GLCM)
+      # Drop first row and column
+      return array_tmp[1:,1:, np.newaxis, np.newaxis]
+
+  def calc_texture_index(self, patch_RGB: np.array, metric:str):
+      """calculates the given texture index
+
+      Args:
+          patch_RGB (np.array): patch of one field (combined visual indices)
+          metric (str): Give string to calculate the regarding metric-> possible strings  'correlation', 'homogeneity', 'contrast'
+
+      Returns:
+          float: returns the texture index of the given field
+      """
+      # define scaler for the the field
+      minmax_scale = MinMaxScaler(feature_range=(0, 8))
+
+      # apply scaler to the field --> Standard to 8 bit, thus reducing noise
+      x_scale = minmax_scale.fit_transform(patch_RGB)
+
+      # change to int for graycomatrix
+      x_int = x_scale.astype('int')
+
+      # Calculate the GLCM for distances 1,5 and 10 pixels
+      GLCM = graycomatrix(x_int, distances=[5], angles=[0], levels=9,symmetric=True)
+
+      # Drop zero values because we are not interested of pixels outside the field
+      GLCM_wo_zeros = self.drop_zero_values(GLCM)
+
+      # Calculate texture metric
+      return np.unique(graycoprops(GLCM_wo_zeros, metric))[0]
+
+
+
 
   # Function for extracting the pixel information of each tile for each band
   def extract_s2(self, df_tiles:pd.DataFrame) -> pd.DataFrame:
@@ -49,7 +104,11 @@ class ConversionToNPZ():
     labels = []         # create empty list to catch the labels
     dates = []          # create empty list to catch the dates for each tile
     tiles = []          # create empty list to catch the tile ids
+
     field_size = []
+    list_correlation = [] # create empty list to catch the correlation index
+    list_homogeneity = [] # create empty list to catch the homogenity index
+    list_contrast = []    # create empty list to catch the contrast index
 
     tile_ids = df_tiles["tile_id"].unique().tolist()
     bands = self.get_bands()
@@ -85,18 +144,42 @@ class ConversionToNPZ():
             patch = multi_band_arr[mask]                  # use the mask to determines which pixels for all the bands and dates belong to the current field id
             np.savez_compressed(f"{self.BANDS_DIR}/{field_id}", patch) # save these pixels of the bands array as np object
             
+            # create 2D Mask
+            mask2D = fields_arr==field_id
+            # change dimension  from 256 x 256 to 256 x 256 x7 x 72
+            mask4D = np.broadcast_to(mask2D[:,:,np.newaxis, np.newaxis] , multi_band_arr.shape) 
+            
+            field_label = np.unique(label_array[mask2D])      # use the mask to get the label of the current field id
+            field_label = [l for l in field_label if l!=0]  # ignores labels that are 0 since these are no fields
+            
+            # apply mask to bands
+            patch = np.where(mask4D, multi_band_arr, np.nan)
+            # choose band 2,3,4 --> Sum UP
+            patch_RGB = patch[:,:,1,:] + patch[:,:,2,:] + patch[:,:,3,:]
+            # transpose dimension for vectorization
+            patch_RGB_T = patch_RGB.transpose(2,0,1) 
+
+            # add texture metrics
+            list_correlation.append([self.calc_texture_index(x, 'correlation') for x in patch_RGB_T])
+            list_homogeneity.append([self.calc_texture_index(x, 'homogeneity') for x in patch_RGB_T])
+            list_contrast.append([self.calc_texture_index(x, 'contrast') for x in patch_RGB_T])
+
             labels.append(field_label)                    # add the current field label
             fields.append(field_id)                       # add the current field id
             field_size.append(np.count_nonzero(mask))     # add the field size
             tiles.append(tile_id)                         # add the current tile id
             dates.append(tile_dates)                      # add the dates which are available for the current tile
+
     df = pd.DataFrame(
       dict(
         field_id=fields,
         tile_id=tiles,
         label=labels,
         field_size=field_size,
-        dates=dates
+        dates=dates,
+        correlation=list_correlation,
+        homogeneity =list_homogeneity, 
+        contrast =list_contrast
         )
       ) # create a dataframe from the meta data
     return df
@@ -152,6 +235,7 @@ class ConversionToNPZ():
 
     print(f"Training bands saved to {self.BANDS_DIR}")
     print(f"Training meta data saved to {self.DATA_DIR}/meta_data_fields_bands.pkl")
+
 
 def main(ROOT_DIR:str):
   ROOT_DIR = get_repo_root()
