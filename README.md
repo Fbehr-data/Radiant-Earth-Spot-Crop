@@ -79,19 +79,19 @@ The data is downloaded from the Radiant Earth Foundation servers. This requires 
 You can start the download by typing the following in the terminal, while `being in the repository-folder`:
 
 ```BASH
-
+python preprocessing.py download
 ```
 ### Preprocessing the data
 The preprocessing scripts also take their time. In the `first preprocessing step`, we convert the image information from the TIF-files to NumPy arrays and save one array per field in the .npz format. This step takes another **1 - 3 hours** depending on the processor power in your PC. You can start the conversion by:
 
 ```BASH
-
+python preprocessing.py convert
 ```
 
 In the `second preprocessing step`, we calculate the mean of for each band of each field for each date. This results in a CSV-file that can be used for further feature engineering. The second preprocessing step is started by:
 
 ```BASH
-
+python preprocessing.py download
 ```
 
 ---
@@ -147,9 +147,8 @@ from train_test_function import train_test_split_fields
 the split is done by that function, we only set the train_size as the test_size will adjust accordingly. We also set the random_state to 42.
 
 ### Resampling
-In the training set we have skewed class proportions. To solve the imbalanced classification problem, we are first going to combine class 8 and 9 into one class. Then we do the resampling using 2 techniques: downsampling the majority classes and upweighting the minority classes using Random UnderSample and OverSample from the library called imblearn. For more details check Dataset 4 in this notebook(https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
+In the training set we have skewed class proportions. In order to solve the imbalanced classification problem, we are first going to combine class 8 and 9 into one class. Then we do the resampling using 2 techniques: downsampling the majority classes and upweighting the minority classes using RandomUnderSampler and RandomOverSampler from the imblearn library. For more details check Dataset in this [notebook](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
 
-
-
-
-
+---
+## Results and Conclusion
+### 
