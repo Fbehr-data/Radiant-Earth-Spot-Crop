@@ -151,4 +151,8 @@ In the training set we have skewed class proportions. In order to solve the imba
 
 ---
 ## Results and Conclusion
-### 
+### Performance of the models
+For the evaluation metric, we chose the F1-score as metric, since the main goal is to correctly identify the crop type of as many fields as possible. Neither false-positive (FP) nor false-negative (FN) miss-classifications are particularly good or bad, hence the harmonic mean F1. 
+
+### Model performance
+For the baseline model we chose a K-Nearest Neighbors model, as this was very quick and easy to implement especially  
