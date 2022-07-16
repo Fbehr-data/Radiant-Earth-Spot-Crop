@@ -152,7 +152,7 @@ In the training set we have skewed class proportions. In order to solve the imba
 ---
 ## Results and Conclusion
 ### Evaluation metric
-For the evaluation metric, we chose the `F1-score` as metric, since the main goal is to correctly identify the crop type of as many fields as possible. Neither false-positive (FP) nor false-negative (FN) miss-classifications are particularly good or bad, hence the harmonic mean F1. 
+For the evaluation metric, we chose the `F1-score` as metric, since the main goal is to correctly identify the crop type (class) of as many fields as possible. Neither false-positive (FP) nor false-negative (FN) miss-classifications are particularly good or bad, hence the harmonic mean F1. 
 
 ### Model performance
 For the baseline model we chose a K-Nearest Neighbors (KNN) model, as this is a simple algorithm, which is based on the assumption that similar classes will be in close proximity of each other. It can be used for both binary and multiclass classifications and is very fast and easy to implement, especially for large data sets [source](https://towardsdatascience.com/multiclass-classification-using-k-nearest-neighbours-ca5281a9ef76). Decision tree ensemble methods were chosen for the more advanced models. They performed well compared to neural networks and KNN. For the F1 score, values of 0.42 were obtained for the baseline model (KNN) on the test data, while the [extremely randomized tree](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html) and the [XGBClassifier](https://xgboost.readthedocs.io/en/stable/#) performed better with values between 0.59 and 0.61 on the test data. However, all models showed overfitting on the training data, implying that they could be further improved by more rigorous regularization.  Since the XGBClassifier performed best (highest F1 score and lower overfitting), the error analysis is performed using the results/predictions of this model.  
@@ -160,4 +160,14 @@ For the baseline model we chose a K-Nearest Neighbors (KNN) model, as this is a 
 ![F1-score](./plots/f1_models.png)
 
 ### Error analysis
-When analyzing the errors of the XGBClassifier, we find no particularly striking misclassifications for particular classes. 
+When analyzing the errors of the XGBClassifier, we find no particularly striking misclassifications for particular classes (crop types). This can be seen in the darker colored diagonal of the confusion matrix. While we have no dark colored areas outside of this diagonal.
+
+![XGB_Confusion_Matrix](./plots/xgb_confusion_matrix.png) 
+
+Looking at the accuracy with which the individual crop types (classes) are classified, large differences become apparent. The classes grapes and wheat show a relatively high accuracy, while the other classes are not predicted very accurately. One reason for this result is probably that grapes and wheat have very characteristic textures and colors, while the rest of the crops are quite similar in this aspect.    
+
+![XGB_Label_Accuracies](./plots/xgb_accuracy_per_label.png)
+
+
+
+![XGB_Label_Area](./plots/xgb_area_per_label_stacked.png)
