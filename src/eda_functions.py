@@ -82,7 +82,7 @@ def plot_confusion_matrix(xgb_cm: confusion_matrix, labels: list):
     ax.yaxis.set_ticklabels(labels)
     plt.yticks(rotation=0) 
     plt.xticks(rotation=30, horizontalalignment="center") 
-
+    
     # display the confusion matrix
     plt.show()
 
