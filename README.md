@@ -79,19 +79,19 @@ The data is downloaded from the Radiant Earth Foundation servers. This requires 
 You can start the download by typing the following in the terminal, while `being in the repository-folder`:
 
 ```BASH
-
+python preprocessing.py download
 ```
 ### Preprocessing the data
 The preprocessing scripts also take their time. In the `first preprocessing step`, we convert the image information from the TIF-files to NumPy arrays and save one array per field in the .npz format. This step takes another **1 - 3 hours** depending on the processor power in your PC. You can start the conversion by:
 
 ```BASH
-
+python preprocessing.py convert
 ```
 
 In the `second preprocessing step`, we calculate the mean of for each band of each field for each date. This results in a CSV-file that can be used for further feature engineering. The second preprocessing step is started by:
 
 ```BASH
-
+python preprocessing.py download
 ```
 
 ---
@@ -147,9 +147,27 @@ from train_test_function import train_test_split_fields
 the split is done by that function, we only set the train_size as the test_size will adjust accordingly. We also set the random_state to 42.
 
 ### Resampling
-In the training set we have skewed class proportions. To solve the imbalanced classification problem, we are first going to combine class 8 and 9 into one class. Then we do the resampling using 2 techniques: downsampling the majority classes and upweighting the minority classes using Random UnderSample and OverSample from the library called imblearn. For more details check Dataset 4 in this notebook(https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
+In the training set we have skewed class proportions. In order to solve the imbalanced classification problem, we are first going to combine class 8 and 9 into one class. Then we do the resampling using 2 techniques: downsampling the majority classes and upweighting the minority classes using RandomUnderSampler and RandomOverSampler from the imblearn library. For more details check Dataset in this [notebook](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
+
+---
+## Results and Conclusion
+### Evaluation metric
+For the evaluation metric, we chose the `F1-score` as metric, since the main goal is to correctly identify the crop type (class) of as many fields as possible. Neither false-positive (FP) nor false-negative (FN) miss-classifications are particularly good or bad, hence the harmonic mean F1. 
+
+### Model performance
+For the baseline model we chose a K-Nearest Neighbors (KNN) model, as this is a simple algorithm, which is based on the assumption that similar classes will be in close proximity of each other. It can be used for both binary and multiclass classifications and is very fast and easy to implement, especially for large data sets [source](https://towardsdatascience.com/multiclass-classification-using-k-nearest-neighbours-ca5281a9ef76). Decision tree ensemble methods were chosen for the more advanced models. They performed well compared to neural networks and KNN. For the F1 score, values of 0.42 were obtained for the baseline model (KNN) on the test data, while the [extremely randomized tree](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html) and the [XGBClassifier](https://xgboost.readthedocs.io/en/stable/#) performed better with values between 0.59 and 0.61 on the test data. However, all models showed overfitting on the training data, implying that they could be further improved by more rigorous regularization.  Since the XGBClassifier performed best (highest F1 score and lower overfitting), the error analysis is performed using the results/predictions of this model.  
+
+![F1-score](./plots/f1_models.png)
+
+### Error analysis
+When analyzing the errors of the XGBClassifier, we find no particularly striking misclassifications for particular classes (crop types). This can be seen in the darker colored diagonal of the confusion matrix. While we have no dark colored areas outside of this diagonal.
+
+![XGB_Confusion_Matrix](./plots/xgb_confusion_matrix.png) 
+
+Looking at the accuracy with which the individual crop types (classes) are classified, large differences become apparent. The classes grapes and wheat show a relatively high accuracy, while the other classes are not predicted very accurately. One reason for this result is probably that grapes and wheat have very characteristic textures and colors, while the rest of the crops are quite similar in this aspect.    
+
+![XGB_Label_Accuracies](./plots/xgb_accuracy_per_label.png)
 
 
 
-
-
+![XGB_Label_Area](./plots/xgb_area_per_label_stacked.png)
