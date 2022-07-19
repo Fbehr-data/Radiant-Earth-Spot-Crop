@@ -150,6 +150,24 @@ the split is done by that function, we only set the train_size as the test_size 
 In the training set we have skewed class proportions. In order to solve the imbalanced classification problem, we are first going to combine class 8 and 9 into one class. Then we do the resampling using 2 techniques: downsampling the majority classes and upweighting the minority classes using RandomUnderSampler and RandomOverSampler from the imblearn library. For more details check Dataset in this [notebook](https://github.com/Fbehr-data/Radiant-Earth-Spot-Crop/blob/main/notebooks/Resampling_crop_type.ipynb).
 
 ---
+## Modelling
+Classification problems are supervised learning problems wherein the training data set consists of data related to independent and response variables (label). The classification models are trained using different algorithms.
+For our Task we tried popular algorithms that can be used for multi-class classification ,such as:
+
+
+* KNN  
+
+* XGBoost 
+
+* RandomForest 
+
+* ANN 
+
+* Extra RandomForest 
+
+
+
+---
 ## Results and Conclusion
 ### Evaluation metric
 For the evaluation metric, we chose the `F1-score` as metric, since the main goal is to correctly identify the crop type (class) of as many fields as possible. Neither false-positive (FP) nor false-negative (FN) miss-classifications are particularly good or bad, hence the harmonic mean F1. 
