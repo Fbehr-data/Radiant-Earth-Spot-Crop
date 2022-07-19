@@ -14,6 +14,18 @@ The objective of the project:
 
 - The objective of this challenge is therefore to classify crops in the Western Cape of South Africa using time series of Sentinel-2 multi-spectral data. Our goal was to build a machine learning model to predict the crop type classes for dataset. 
 
+The goals of the project:
+
+- For our project we set three different goals:
+    
+    * The accurate census provides valuable information for the farmers community. Thus we want to achieve a **high accuracy on each crop type**.
+
+    * Using helicopters for mapping agriculture lang usage is expensive and time consuming. Based on our research we estimate the cost for mapping to be 1.000.000 $ and it takes 25 working days to map this area. Our goal is to **reduce the cost (money & time) for agricultural census**.
+
+    * The entire mapping process takes 16 weeks. But Sentinel2-Data overflies the area of interest every 3 - 10 days. The temporal resolution can be improved. Thus we want to provide a model to create a **census for each month**.
+
+Evaluation metric for the models:
+
 ---
 ## The Team
 
@@ -120,6 +132,14 @@ In the field of remote sensing the actual bands are used to calculate spectral i
 - NDRE
 - GARI<br>
 
+#### **Texture Indices**
+It is proven that textural metrics can be used on remote sensing image to classifify different crop types. These metrics represent the texture of a field, as somebody can imagine a winegrape-field has a different texture than an wheat field. A famous approach are the metrics from the Grey-Level-Co-Occurence Matrix (GLCM). A list of the most common indices can be found [here](https://rstudio-pubs-static.s3.amazonaws.com/536921_af2c31c083544a3a9588da9c86692636.html).
+
+We calculate these indices:
+- Homogeneity
+- Contrast
+- Correlation
+
 #### **Mean per Month and Feature-Time-Confusion** 
 We calculate for each field the mean values of each feature and transform the the date column / months column and combine it to the features.
 
@@ -189,3 +209,21 @@ Looking at the accuracy with which the individual crop types (classes) are class
 
 
 ![XGB_Label_Area](./plots/xgb_area_per_label_stacked.png)
+
+### Conclusion
+
+* Goal 1: **high accuracy on each crop type**.
+
+A high accuracy prediction is only available for two of eight crop types (wheat, wine grapes)
+
+* Goal 2: **reduce the cost (money & time) for agricultural census**.
+
+Many areas have the same crop types. Therefore, wine regions and wheat fields can be excluded from mapping. A reduction of cost will be around 270.000 $ and our model needs only a few hours instead of multiple days. 
+
+
+* Goal 3: **census for each month**.
+
+Based on our model a monthly census is not achievable, because the performance (accuracy) drops a lot. Our model needs the entire growing season for the prediction.
+
+
+
