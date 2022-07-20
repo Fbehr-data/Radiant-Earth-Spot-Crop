@@ -4,28 +4,37 @@
 # import the needed modules
 # Typer is used as CLI
 import typer
-import xgboost
+
 from src.find_repo_root import get_repo_root
+from src.gradient_boot_model import XGBModel
 
 # set root directory
 ROOT_DIR = get_repo_root()
+
+def run_xgb(ROOT_DIR):
+    xgb_model = XGBModel(ROOT_DIR)
+    xgb_model.load_data()
+    xgb_model.train_model()
+    xgb_model.make_prediction() 
+
+# set all available models
+models = {
+    "xgboost": run_xgb
+}
 
 # create a Typer object for the preprocessing
 modelling = typer.Typer()
 
 @modelling.command()
-def choose_model(model_name:str):
-    model_names = {"xgboost": "xgboost script"}
-    print(model_names[model_name]) 
-
+def choose_model():
+    print("These are the available models: \n")
+    for key in models.keys():
+        print(f"    {key}")
+    selected_model = typer.prompt("\nWhich model to use?")
+    try:
+        models[selected_model](ROOT_DIR)
+    except KeyError:
+        print("\nThis is not a valid model choice. \nPlease choose one of the available models.")
 
 if __name__=="__main__":
-    print(
-        "\n \
-        Commands to use: \n \
-        1. train    -   Train/fit the model to the training data. \n \
-        2. optimize -   Use Bayesian optimization to find the best hyperparameters. \n \
-        3. predict  -   Then 'convert' the images to NPZ files for each . \n \
-        4. results  -   Finally 'calculate' the mean of each band for each field for each date. \n"
-        )
     modelling()
