@@ -30,7 +30,7 @@ def choose_model():
     print("These are the available models: \n")
     for key in models.keys():
         print(f"    {key}")
-    selected_model = typer.prompt("\nWhich model to use?")
+    selected_model = typer.prompt("\nWhich model to use? Type in your choice").lower()
     try:
         models[selected_model](ROOT_DIR)
     except KeyError:
