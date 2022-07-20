@@ -20,11 +20,9 @@ The goals of the project:
     
     * The accurate census provides valuable information for the farmers community. Thus we want to achieve a **high accuracy on each crop type**.
 
-    * Using helicopters for mapping agriculture lang usage is expensive and time consuming. Based on our research we estimate the cost for mapping to be 1.000.000 $ and it takes 25 working days to map this area. Our goal is to **reduce the cost (money & time) for agricultural census**.
+    * Using helicopters for mapping agriculture lang usage is expensive and time consuming. Based on our research we estimate the cost for mapping to be $1,000,000 and it takes 25 working days to map this area. Our goal is to **reduce the cost (money & time) for agricultural census**.
 
     * The entire mapping process takes 16 weeks. But Sentinel2-Data overflies the area of interest every 3 - 10 days. The temporal resolution can be improved. Thus we want to provide a model to create a **census for each month**.
-
-Evaluation metric for the models:
 
 ---
 ## The Team
@@ -37,14 +35,13 @@ Felix Behrendt:
 - I studied Geoinformatics and love to gain more professional experience in data science.
 - Find me on [GitHub](https://github.com/Fbehr-data), [LinkedIn](https://www.linkedin.com/in/felix-behrendt-3b4ba1237/)
 
-
 Max Langer: 
-- I am a biologist and highly motivated to build a career in data science.
+- I am a biologist and highly motivated to build a career in data science, as working with data and code is my passion.
 - Find me on: [GitHub](https://github.com/langer-net), [LinkedIn](https://www.linkedin.com/in/max-langer-798903127/)
 
 Picasso
 
-Timo Fischer:
+Timo Fischer
 
 ---
 ## Data Structure
@@ -94,7 +91,7 @@ You can start the download by typing the following in the terminal, while `being
 python preprocessing.py download
 ```
 ### Preprocessing the data
-The preprocessing scripts also take their time. In the `first preprocessing step`, we convert the image information from the TIF-files to NumPy arrays and save one array per field in the .npz format. This step takes another **1 - 3 hours** depending on the processor power in your PC. You can start the conversion by:
+The preprocessing scripts also take their time. In the `first preprocessing step`, we convert the image information from the TIF-files to NumPy arrays and save one array per field in the .npz format. This step takes another **1 - 3 hours** depending on the processor power of your PC. You can start the conversion by:
 
 ```BASH
 python preprocessing.py convert
@@ -161,9 +158,11 @@ Splitting our dataset is essential for an unbiased evaluation of prediction perf
 - Validation set : is used for unbiased model evaluation during hyperparameter tuning
 - Test set: is needed for an unbiased evaluation of the final model.
 Now, in order to do that we need first to import the train_test_split function that we created, like this:
+
 ```BASH
 from train_test_function import train_test_split_fields
 ```
+
 the split is done by that function, we only set the train_size as the test_size will adjust accordingly. We also set the random_state to 42.
 
 ### Resampling
@@ -171,21 +170,19 @@ In the training set we have skewed class proportions. In order to solve the imba
 
 ---
 ## Modelling
-Classification problems are supervised learning problems wherein the training data set consists of data related to independent and response variables (label). The classification models are trained using different algorithms.
-For our Task we tried popular algorithms that can be used for multi-class classification ,such as:
-
+Classification problems are supervised learning problems where the training dataset consists of data composed of independent features and of the dependent targets (labels or classes). The classification models are trained using different algorithms. For our task, we tried common algorithms that can be used for multi-class classification such as:
 
 * KNN  
-
 * XGBoost 
-
 * RandomForest 
-
 * ANN 
-
 * Extra RandomForest 
 
+The modelling can be started by typing the following in the terminal, while `being in the repository-folder`:
 
+```BASH
+python modelling.py
+```
 
 ---
 ## Results and Conclusion
@@ -193,22 +190,30 @@ For our Task we tried popular algorithms that can be used for multi-class classi
 For the evaluation metric, we chose the `F1-score` as metric, since the main goal is to correctly identify the crop type (class) of as many fields as possible. Neither false-positive (FP) nor false-negative (FN) miss-classifications are particularly good or bad, hence the harmonic mean F1. 
 
 ### Model performance
-For the baseline model we chose a K-Nearest Neighbors (KNN) model, as this is a simple algorithm, which is based on the assumption that similar classes will be in close proximity of each other. It can be used for both binary and multiclass classifications and is very fast and easy to implement, especially for large data sets [source](https://towardsdatascience.com/multiclass-classification-using-k-nearest-neighbours-ca5281a9ef76). Decision tree ensemble methods were chosen for the more advanced models. They performed well compared to neural networks and KNN. For the F1 score, values of 0.42 were obtained for the baseline model (KNN) on the test data, while the [extremely randomized tree](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html) and the [XGBClassifier](https://xgboost.readthedocs.io/en/stable/#) performed better with values between 0.59 and 0.61 on the test data. However, all models showed overfitting on the training data, implying that they could be further improved by more rigorous regularization.  Since the XGBClassifier performed best (highest F1 score and lower overfitting), the error analysis is performed using the results/predictions of this model.  
+For the baseline model we chose a K-Nearest Neighbors (KNN) model, as this is a simple algorithm, which is based on the assumption that similar classes will be in close proximity of each other. It can be used for both binary and multiclass classifications and is very fast and easy to implement, especially for large data sets [source](https://towardsdatascience.com/multiclass-classification-using-k-nearest-neighbours-ca5281a9ef76).
+
+Decision tree ensemble methods were chosen for the more advanced models. They performed well compared to neural networks and KNN. For the F1 score, values of 0.42 were obtained for the baseline model (KNN) on the test data, while the [extremely randomized tree](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html) and the [XGBClassifier](https://xgboost.readthedocs.io/en/stable/#) performed better with values between 0.59 and 0.61 on the test data.
+
+However, all models showed overfitting on the training data, implying that they do not generalize very well and could be further improved by more rigorous regularization. Since the XGBClassifier performed best (highest F1 score and lowest overfitting), the error analysis is performed using the results/predictions of this model.  
 
 ![F1-score](./plots/f1_models.png)
 
 ### Error analysis
-When analyzing the errors of the XGBClassifier, we find no particularly striking misclassifications for particular classes (crop types). This can be seen in the darker colored diagonal of the confusion matrix. While we have no dark colored areas outside of this diagonal.
+When analyzing the errors of the XGBClassifier, we find only a few particularly noticeable misclassifications for certain crop types. These are the entries outside the diagonal of correctly classified crops. We note that `Weeds`are often misclassified as `Fallow` and vice versa. The remaining misclassifications are distributed rather stochatically, which is a good sign that our modeling approach does not contain systematic errors.
 
-![XGB_Confusion_Matrix](./plots/xgb_confusion_matrix.png) 
+![XGB_Confusion_Matrix](./plots/xgb_confusion_matrix_percent.png) 
 
-Looking at the accuracy with which the individual crop types (classes) are classified, large differences become apparent. The classes grapes and wheat show a relatively high accuracy, while the other classes are not predicted very accurately. One reason for this result is probably that grapes and wheat have very characteristic textures and colors, while the rest of the crops are quite similar in this aspect.    
+Looking at the accuracy with which the individual crop types (classes) are rightly classified, large differences become apparent. The classes `Wine grapes` and `wheat` show a relatively high accuracy (80-90%), while the other classes are not predicted very accurately (below 60-70%). One reason for this result is probably that grapes and wheat have very characteristic textures and colors, while the rest of the crops are quite similar in this aspect. 
 
-![XGB_Label_Accuracies](./plots/xgb_accuracy_per_label.png)
+![XGB_Label_Accuracies](./plots/xgb_accuracy_per_label_percent.png)
 
+We also took a look at the area covered by the fields of each crop type. In the graph, only the test data (1/3 of the whole dataset) are shown, but they are representative of the whole dataset. 
 
+We see that `Wheat` covers the largest area and `Wine grapes` cover the smallest area compared to the other crop types. In addition, the lowest amounts of misclassified areas (in percentage) are in the `Wheat` (14% missclassified area) and `Wine grapes` (9% missclassified area) classes. In the other classes, the percentages of misclassified areas range from 25 to 56%. 
 
 ![XGB_Label_Area](./plots/xgb_area_per_label_stacked.png)
+
+This result together with the high accuracy shows us that we can use the model successfully in `Wheat` and `Wine grapes`. While it still needs to be improved for the classification of the other crop types. If we add up the money that can be saved from correctly classified wheat area by using our model compared to the manual agricultural census, we come up with savings of $210,000. We also save an additional $60,000 for the correctly classified wine grapes area.
 
 ### Conclusion
 
@@ -218,12 +223,12 @@ A high accuracy prediction is only available for two of eight crop types (wheat,
 
 * Goal 2: **reduce the cost (money & time) for agricultural census**.
 
-Many areas have the same crop types. Therefore, wine regions and wheat fields can be excluded from mapping. A reduction of cost will be around 270.000 $ and our model needs only a few hours instead of multiple days. 
+Many areas have the same crop types. Therefore, wine regions and wheat fields can be excluded from mapping. A reduction of cost will be around $270,000 and our model needs only a few hours instead of multiple days. 
 
 
 * Goal 3: **census for each month**.
 
-Based on our model a monthly census is not achievable, because the performance (accuracy) drops a lot. Our model needs the entire growing season for the prediction.
+Based on our model a monthly census is not achievable, because the performance (accuracy) drops a lot. Our model needs the data of the entire growing season for the prediction.
 
 
 
